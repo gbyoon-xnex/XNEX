@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XNEX — AI 네이티브 비즈니스 스케일업 파트너</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Pretendard Variable", "sans-serif"],
+            sora: ["Sora", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* GNB Styles from React Component */
+    .gnb-container {
+      z-index: 200;
+      padding: 10px 16px 0;
+      position: sticky;
+      top: 20px; /* Adjusted for static html */
+      width: 100%;
+    }
+    @media (min-width: 768px) {
+      .gnb-container { padding: 10px 24px 0; }
+    }
+    .gnb-inner-wrap {
+      position: relative;
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(5, 5, 12, 0.94);
+      border-radius: 14px;
+      align-items: center;
+      max-width: 1600px;
+      height: 60px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      box-shadow: 0 10px 30px -16px rgba(0,0,0,0.6);
+    }
+    @media (min-width: 768px) {
+      .gnb-inner-wrap { padding: 0 28px; }
+    }
+    .gnb-logo-link {
+      display: flex;
+      align-items: center;
+      margin-right: auto;
+    }
+    .gnb-nav-links {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    @media (min-width: 720px) {
+      .gnb-nav-links { display: flex; }
+    }
+    .gnb-nav-item {
+      font-family: var(--font-sora);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      border-radius: 20px;
+      padding: 6px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all .2s;
+      text-decoration: none;
+    }
+    .gnb-nav-item:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.06);
+    }
+    .gnb-nav-item.active {
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .gnb-contact-btn {
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-radius: 12px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      text-decoration: none;
+      font-family: var(--font-sora);
+    }
+    .gnb-contact-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+    }
+
+    :root {
+      --font-pretendard: "Pretendard Variable", sans-serif;
+      --font-sora: "Sora", sans-serif;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --popover: oklch(1 0 0);
+      --popover-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --radius: 0.625rem;
+    }
+
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --popover: oklch(0.205 0 0);
+      --popover-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+    }
+
+    * {
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+
+    html, body {
+      font-family: var(--font-pretendard);
+      background-color: var(--background);
+      color: var(--foreground);
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ===== Orbit Hero Section ===== */
+    .orbit-container {
+      animation: spin 40s linear infinite;
+    }
+    .orbit-node-content {
+      animation: spin-reverse 40s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes spin-reverse {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-360deg); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    .orbit-float {
+      animation: float 6s ease-in-out infinite;
+    }
+    .orbit-spin {
+      animation: spin 40s linear infinite;
+    }
+
+    /* ===== Project Showcase ===== */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* ===== Logo Cloud (replacement for framer-motion InfiniteSlider) ===== */
+    .logo-track {
+      display: flex;
+      width: max-content;
+      gap: 80px;
+      align-items: center;
+      animation: scroll-x 40s linear infinite;
+    }
+    /* `reverse` mode from original: go from -50% back to 0 */
+    @keyframes scroll-x {
+      from { transform: translateX(-50%); }
+      to { transform: translateX(0); }
+    }
+
+    /* ===== XNEX Wordmark Marquee ===== */
+    @keyframes xnex-marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .xnex-marquee-track {
+      display: flex;
+      width: max-content;
+      align-items: center;
+      gap: 64px;
+      animation: xnex-marquee 28s linear infinite;
+      will-change: transform;
+    }
+    .xnex-marquee-track:hover { animation-play-state: paused; }
+
+    /* ===== Partner Logo Marquee ===== */
+    @keyframes partner-marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .partner-marquee-track {
+      display: flex;
+      width: max-content;
+      align-items: center;
+      gap: 96px;
+      padding: 0 48px;
+      animation: partner-marquee 40s linear infinite;
+      will-change: transform;
+    }
+    .partner-marquee-track:hover { animation-play-state: paused; }
+    .partner-logo {
+      height: 36px;
+      width: auto;
+      flex-shrink: 0;
+      filter: brightness(0) invert(1);
+      opacity: 0.55;
+      transition: opacity 0.3s;
+    }
+    .partner-logo:hover { opacity: 1; }
+    .xnex-marquee-mask {
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .xnex-marquee-track { animation: none; }
+    }
+
+    /* ===== CTA Button ===== */
+    .btn-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .btn {
+      --border-radius: 24px;
+      --padding: 4px;
+      --transition: 0.4s;
+      --button-color: #101010;
+      --highlight-color-hue: 0deg;
+
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8em 1.5em 0.8em 1.2em;
+      font-family: var(--font-pretendard), sans-serif;
+      font-size: 0.95em;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+
+      background-color: var(--button-color);
+
+      box-shadow:
+        inset 0px 1px 1px rgba(255, 255, 255, 0.2),
+        inset 0px 2px 2px rgba(255, 255, 255, 0.15),
+        inset 0px 4px 4px rgba(255, 255, 255, 0.1),
+        inset 0px 8px 8px rgba(255, 255, 255, 0.05),
+        inset 0px 16px 16px rgba(255, 255, 255, 0.05),
+        0px -1px 1px rgba(0, 0, 0, 0.02),
+        0px -2px 2px rgba(0, 0, 0, 0.03),
+        0px -4px 4px rgba(0, 0, 0, 0.05),
+        0px -8px 8px rgba(0, 0, 0, 0.06),
+        0px -16px 16px rgba(0, 0, 0, 0.08);
+
+      border: solid 1px #fff2;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      position: relative;
+
+      transition:
+        box-shadow var(--transition),
+        border var(--transition),
+        background-color var(--transition);
+    }
+    .btn::before {
+      content: "";
+      position: absolute;
+      top: calc(0px - var(--padding));
+      left: calc(0px - var(--padding));
+      width: calc(100% + var(--padding) * 2);
+      height: calc(100% + var(--padding) * 2);
+      border-radius: calc(var(--border-radius) + var(--padding));
+      pointer-events: none;
+      background-image: linear-gradient(0deg, #0004, #000a);
+
+      z-index: -1;
+      transition:
+        box-shadow var(--transition),
+        filter var(--transition);
+      box-shadow:
+        0 -8px 8px -6px #0000 inset,
+        0 -16px 16px -8px #00000000 inset,
+        1px 1px 1px #fff2,
+        2px 2px 2px #fff1,
+        -1px -1px 1px #0002,
+        -2px -2px 2px #0001;
+    }
+    .btn::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      pointer-events: none;
+      background-image: linear-gradient(
+        0deg,
+        #fff,
+        hsl(var(--highlight-color-hue), 0%, 70%),
+        hsla(var(--highlight-color-hue), 0%, 70%, 50%),
+        8%,
+        transparent
+      );
+      background-position: 0 0;
+      opacity: 0;
+      transition:
+        opacity var(--transition),
+        filter var(--transition);
+    }
+
+    .btn-letter {
+      position: relative;
+      display: inline-block;
+      color: #fff8;
+      animation: letter-anim 2.5s ease-in-out infinite;
+      transition:
+        color var(--transition),
+        text-shadow var(--transition),
+        opacity var(--transition);
+    }
+    @keyframes letter-anim {
+      50% {
+        text-shadow: 0 0 4px #fff;
+        color: #fff;
+      }
+    }
+
+    .btn-svg {
+      height: 22px;
+      margin-right: 0.8rem;
+      fill: #e8e8e8;
+      animation: flicker 2s linear infinite;
+      animation-delay: 0.5s;
+      filter: drop-shadow(0 0 2px #fff9);
+      transition:
+        fill var(--transition),
+        filter var(--transition),
+        opacity var(--transition);
+    }
+    @keyframes flicker {
+      50% { opacity: 0.3; }
+    }
+
+    .txt-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+    .txt-1 {
+      display: flex;
+      gap: 0px;
+    }
+
+    .btn:hover {
+      border: solid 1px hsla(var(--highlight-color-hue), 0%, 80%, 40%);
+    }
+    .btn:hover::before {
+      box-shadow:
+        0 -8px 8px -6px #fffa inset,
+        0 -16px 16px -8px hsla(var(--highlight-color-hue), 0%, 70%, 30%) inset,
+        1px 1px 1px #fff2,
+        2px 2px 2px #fff1,
+        -1px -1px 1px #0002,
+        -2px -2px 2px #0001;
+    }
+    .btn:hover::after {
+      opacity: 0.8;
+      mask-image: linear-gradient(0deg, #fff, transparent);
+      -webkit-mask-image: linear-gradient(0deg, #fff, transparent);
+    }
+    .btn:hover .btn-svg {
+      fill: #fff;
+      filter: drop-shadow(0 0 3px hsl(var(--highlight-color-hue), 0%, 100%))
+        drop-shadow(0 -4px 6px #0009);
+      animation: none;
+    }
+    .btn:active { transform: translateY(2px); transition: transform 0.1s; }
+
+    .btn-letter:nth-child(1) { animation-delay: 0s; }
+    .btn-letter:nth-child(2) { animation-delay: 0.1s; }
+    .btn-letter:nth-child(3) { animation-delay: 0.2s; }
+    .btn-letter:nth-child(4) { animation-delay: 0.3s; }
+    .btn-letter:nth-child(5) { animation-delay: 0.4s; }
+    .btn-letter:nth-child(6) { animation-delay: 0.5s; }
+    .btn-letter:nth-child(7) { animation-delay: 0.6s; }
+    .btn-letter:nth-child(8) { animation-delay: 0.7s; }
+    .btn-letter:nth-child(9) { animation-delay: 0.8s; }
+    .btn-letter:nth-child(10) { animation-delay: 0.9s; }
+
+    /* Font family helper classes */
+    .font-sora { font-family: var(--font-sora); }
+
+    /* Card Decorator corners are styled via utility classes inline */
+
+    /* Logo images */
+    .logo-img {
+      pointer-events: none;
+      user-select: none;
+      height: 1.5rem;
+      opacity: 0.4;
+      filter: grayscale(1) invert(1);
+      transition: opacity 0.2s;
+    }
+    @media (min-width: 768px) {
+      .logo-img { height: 2rem; }
+    }
+    .logo-img:hover { opacity: 1; }
+
+    /* Logo text items for client cloud */
+    .logo-text-item {
+      font-family: var(--font-sora);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.35);
+      white-space: nowrap;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+      flex-shrink: 0;
+    }
+    .logo-text-item:hover { color: rgba(255,255,255,0.9); }
+
+    /* Card hover glow for diff cards */
+    .diff-card { transition: background 0.3s; }
+
+    /* Process step active state */
+    .active-step { background: rgba(59,130,246,0.06); }
+    .active-step p:first-child { color: #60a5fa !important; }
+    .active-step p:last-child { color: white !important; }
+
+    /* Count-up animation */
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .count-animate { animation: countUp 0.6s ease forwards; }
+
+    /* Progressive Blur layers */
+
+    /* Header hover: disable difference blend so menu shows monochrome */
+    header.site-header { mix-blend-mode: difference; transition: mix-blend-mode 0s; }
+    header.site-header:has(a:hover) { mix-blend-mode: normal; }
+    header.site-header:has(a:hover) a { color: #fff; }
+    header.site-header:has(a:hover) a:hover { color: #fff; }
+  </style>
+</head>
+<body class="antialiased min-h-full flex flex-col">
+  <main class="flex min-h-screen flex-col items-center justify-center">
+
+    <!-- ============ HEADER (Synced with AEO/AX GNB) ============ -->
+    <div class="gnb-container">
+      <div class="gnb-inner-wrap">
+        <a href="/xnex-index.html" class="gnb-logo-link" aria-label="XNEX">
+          <img src="assets/XNEX.svg" alt="XNEX" width="118" height="16" />
+        </a>
+
+        <div class="gnb-nav-links">
+          <a href="/xnex-index.html" class="gnb-nav-item active">Main</a>
+          <a href="/ax" class="gnb-nav-item">AX Agency</a>
+          <a href="/aeo" class="gnb-nav-item">AEO</a>
+          <a href="/board" class="gnb-nav-item">Library</a>
+        </div>
+
+        <a href="mailto:contact@xnex.kr" class="gnb-contact-btn">
+          <span>Contact</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7"></path>
+            <path d="M7 7h10v10"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- ============ DEMO / SHADER HERO ============ -->
+    <div class="relative flex h-screen w-screen flex-col items-center justify-center overflow-hidden bg-black">
+      <div id="shader-container" class="w-full h-full absolute inset-0"></div>
+      <div class="absolute inset-0 bg-black/20 pointer-events-none" style="z-index:5;"></div>
+      <img id="hero-x-object" src="assets/object-x2.png" alt="X" class="pointer-events-none z-10 w-[28vw] max-w-[420px] h-auto" style="filter: drop-shadow(0 0 30px rgba(0,0,0,0.5)); transform: perspective(1000px) rotateX(0deg) rotateY(0deg); will-change: transform;" />
+      <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black to-transparent pointer-events-none z-20"></div>
+    </div>
+
+    <!-- ============ ORBIT HERO SECTION ============ -->
+    <section class="relative max-w-[1600px] mx-auto my-32 pl-12 flex items-center justify-between h-[35rem] border border-dashed border-white/40 bg-white dark:bg-black overflow-hidden w-full" style="font-family: var(--font-sora);">
+      <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color: var(--primary);"></span>
+      <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color: var(--primary);"></span>
+      <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color: var(--primary);"></span>
+      <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color: var(--primary);"></span>
+
+      <div class="w-1/2 z-10">
+        <p class="text-sm font-bold tracking-widest text-blue-400 uppercase mb-4">AI Native Business Scale-up Partner</p>
+        <h1 class="text-4xl sm:text-5xl font-bold mb-5 text-gray-900 dark:text-white leading-tight">
+          AI 네이티브 전문가들이<br/>클라이언트의 X를<br/>만들어내는 기업.
+        </h1>
+        <p class="text-gray-400 dark:text-gray-400 text-base sm:text-lg max-w-md leading-relaxed mb-6">
+          X = Unknown · Exponential · Cross · Transformation<br/>
+          기존 공식으로 풀 수 없는 성장을, 엑스넥스가 설계합니다.
+        </p>
+        <div class="flex gap-3">
+          <a href="mailto:contact@xnex.kr" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black text-base font-bold hover:bg-gray-100 transition-colors">
+            무료 AX 진단 →
+          </a>
+          <a href="#why" class="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/20 text-white/70 text-base font-medium hover:text-white transition-colors">
+            왜 XNEX인가
+          </a>
+        </div>
+      </div>
+
+      <div class="relative w-1/2 h-full flex items-center justify-start overflow-hidden">
+        <div class="relative w-[50rem] h-[50rem] translate-x-[20%] flex items-center justify-center">
+          <!-- Center image (float) -->
+          <div class="w-32 h-32 rounded-full flex items-center justify-center z-20 relative overflow-hidden orbit-float">
+            <img src="assets/bubble1.png" alt="XNEX background" class="absolute inset-0 w-full h-full object-cover rounded-full" />
+            <div class="absolute inset-0 bg-black/10" style="z-index:5;"></div>
+            <span class="text-white font-black text-2xl tracking-tighter relative z-10" style="font-family: var(--font-sora); filter: drop-shadow(0 0 15px rgba(0,0,0,0.9));">XNEX</span>
+          </div>
+
+          <!-- Orbit lines (rotate) -->
+          <div class="absolute inset-0 flex items-center justify-center orbit-container">
+            <div class="absolute rounded-full border border-dashed border-white/25" style="width:25rem;height:25rem;"></div>
+            <div class="absolute rounded-full border border-dashed border-white/25" style="width:35rem;height:35rem;"></div>
+            <div class="absolute rounded-full border border-dashed border-white/25" style="width:45rem;height:45rem;"></div>
+          </div>
+
+          <!-- Nodes (rotate) -->
+          <div class="absolute w-full h-full orbit-spin" id="orbit-nodes"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WHY WE EXIST + IDENTITY (하나의 섹션으로 통합) ============ -->
+    <section id="why" class="relative w-full bg-black" style="font-family: var(--font-sora);">
+
+      <!-- Part 1: WHY WE EXIST -->
+      <div class="border-t border-dashed border-white/20 py-24 max-w-[1600px] mx-auto">
+        <p class="text-sm font-bold tracking-widest text-blue-400 uppercase mb-3">WHY WE EXIST</p>
+        <h2 class="text-4xl sm:text-5xl font-bold text-white mb-4 leading-tight">AI 시대, 그런데<br/>에이전시는 아직도 그대로.</h2>
+        <p class="text-gray-500 text-lg mb-14 max-w-lg">시대에 맞춰 성장하지 못하고, 아직도 늘 하던 대로 관성적으로만 업무를 수행합니다.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-0 border border-dashed border-white/30">
+          <div class="relative p-8 border-r border-dashed border-white/20">
+            <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color:#ef4444;"></span>
+            <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color:#ef4444;"></span>
+            <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color:#ef4444;"></span>
+            <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color:#ef4444;"></span>
+            <p class="text-lg font-bold text-red-500 tracking-tight mb-4">마케팅 에이전시</p>
+            <ul class="text-white/80 text-base leading-relaxed space-y-2">
+              <li class="relative pl-4">
+                <span class="absolute left-0 text-red-500">•</span>
+                실행을 하는 회사는 많음.
+              </li>
+              <li class="relative pl-4">
+                <span class="absolute left-0 text-red-500">•</span>
+                <span class="text-white font-semibold">진짜 전략을 수립하고 크리에이티브한 기획을 하는 회사는 없음.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="relative p-8 border-r border-dashed border-white/20">
+            <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color:#ef4444;"></span>
+            <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color:#ef4444;"></span>
+            <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color:#ef4444;"></span>
+            <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color:#ef4444;"></span>
+            <p class="text-lg font-bold text-red-500 tracking-tight mb-4">SW 개발 에이전시</p>
+            <ul class="text-white/80 text-base leading-relaxed space-y-2">
+              <li class="relative pl-4">
+                <span class="absolute left-0 text-red-500">•</span>
+                <span class="text-white font-semibold">비싸고, PMF 검증은 의뢰인 몫.</span>
+              </li>
+              <li class="relative pl-4">
+                <span class="absolute left-0 text-red-500">•</span>
+                <span class="text-white font-semibold">납품 후 책임 종료.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="relative p-8">
+            <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color:#ef4444;"></span>
+            <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color:#ef4444;"></span>
+            <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color:#ef4444;"></span>
+            <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color:#ef4444;"></span>
+            <p class="text-lg font-bold text-red-500 tracking-tight mb-4">AX 에이전시</p>
+            <ul class="text-white/80 text-base leading-relaxed space-y-2">
+              <li class="relative pl-4">
+                <span class="absolute left-0 text-red-500">•</span>
+                IT 개발자로만 이뤄져 있음.
+              </li>
+              <li class="relative pl-4">
+                <span class="absolute left-0 text-red-500">•</span>
+                <span class="text-white font-semibold">클라이언트의 사업을 제대로 이해하지 못함.</span>
+              </li>
+              <li class="relative pl-4">
+                <span class="absolute left-0 text-red-500">•</span>
+                실무 경험이 없음.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-10 px-6 py-10 sm:py-12 border border-blue-400/50 relative overflow-hidden"
+             style="background: radial-gradient(ellipse at center, rgba(59,130,246,0.18) 0%, rgba(59,130,246,0.04) 60%, transparent 100%); box-shadow: 0 0 60px -10px rgba(59,130,246,0.45), inset 0 0 30px -15px rgba(59,130,246,0.3);">
+          <span class="absolute -left-px -top-px block size-5 border-l-[3px] border-t-[3px] border-blue-300"></span>
+          <span class="absolute -right-px -top-px block size-5 border-r-[3px] border-t-[3px] border-blue-300"></span>
+          <span class="absolute -bottom-px -left-px block size-5 border-b-[3px] border-l-[3px] border-blue-300"></span>
+          <span class="absolute -bottom-px -right-px block size-5 border-b-[3px] border-r-[3px] border-blue-300"></span>
+
+          <p class="text-center text-[11px] sm:text-xs font-bold tracking-[0.3em] text-blue-300/80 uppercase mb-3">
+            ✦ The Only Solution ✦
+          </p>
+
+          <p class="text-center text-base sm:text-lg font-semibold text-white/85 tracking-tight">
+            이 문제를 해결할 수 있는 유일한 곳
+          </p>
+
+          <p class="text-center mt-4 text-4xl sm:text-5xl font-black tracking-tighter select-none"
+             style="font-family: var(--font-sora); letter-spacing: -0.04em; background: linear-gradient(180deg, #ffffff 0%, #93c5fd 60%, #60a5fa 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 18px rgba(96,165,250,0.55));">
+            XNEX
+          </p>
+        </div>
+      </div>
+
+      <!-- XNEX 풀사이즈 구분선 (무한 마키) -->
+      <div class="w-full border-t border-b border-white/10 py-10 overflow-hidden relative xnex-marquee-mask" style="background: linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.06) 50%, transparent 100%);">
+        <div class="xnex-marquee-track">
+          <span class="text-5xl sm:text-7xl font-black tracking-tighter select-none" style="color: rgba(255, 255, 255, 0.955); font-family: var(--font-sora); letter-spacing: -0.04em;">XNEX</span>
+          <span class="text-white/50 text-xl sm:text-3xl font-bold tracking-[0.25em] uppercase">그래서</span>
+          <span class="text-5xl sm:text-7xl font-black tracking-tighter select-none" style="color: rgba(255, 255, 255, 0.955); font-family: var(--font-sora); letter-spacing: -0.04em;">XNEX</span>
+          <span class="text-white/50 text-xl sm:text-3xl font-bold tracking-[0.25em] uppercase">는</span>
+          <span class="text-5xl sm:text-7xl font-black tracking-tighter select-none" style="color: rgba(255, 255, 255, 0.955); font-family: var(--font-sora); letter-spacing: -0.04em;">XNEX</span>
+          <span class="text-3xl sm:text-5xl font-black select-none" style="color: rgba(96,165,250,0.55); font-family: var(--font-sora);">✦</span>
+
+          <span class="text-5xl sm:text-7xl font-black tracking-tighter select-none" style="color: rgba(255, 255, 255, 0.955); font-family: var(--font-sora); letter-spacing: -0.04em;" aria-hidden="true">XNEX</span>
+          <span class="text-white/50 text-xl sm:text-3xl font-bold tracking-[0.25em] uppercase" aria-hidden="true">그래서</span>
+          <span class="text-5xl sm:text-7xl font-black tracking-tighter select-none" style="color: rgba(255, 255, 255, 0.955); font-family: var(--font-sora); letter-spacing: -0.04em;" aria-hidden="true">XNEX</span>
+          <span class="text-white/50 text-xl sm:text-3xl font-bold tracking-[0.25em] uppercase" aria-hidden="true">는</span>
+          <span class="text-5xl sm:text-7xl font-black tracking-tighter select-none" style="color: rgba(255, 255, 255, 0.955); font-family: var(--font-sora); letter-spacing: -0.04em;" aria-hidden="true">XNEX</span>
+          <span class="text-3xl sm:text-5xl font-black select-none" style="color: rgba(96,165,250,0.55); font-family: var(--font-sora);" aria-hidden="true">✦</span>
+        </div>
+      </div>
+
+      <!-- Part 2: IDENTITY -->
+      <div class="max-w-[1600px] mx-auto py-24">
+        <div class="border border-dashed border-white/40 relative">
+          <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color: var(--primary);"></span>
+          <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color: var(--primary);"></span>
+          <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color: var(--primary);"></span>
+          <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color: var(--primary);"></span>
+          <div class="flex flex-col md:flex-row">
+            <div class="md:w-1/2 p-12 border-b md:border-b-0 md:border-r border-dashed border-white/20 flex flex-col justify-center">
+            
+              <h2 class="text-3xl font-bold text-white mb-6 leading-snug">
+                AI 네이티브 전문가들이<br/>검증된 결과물로<br/>클라이언트의 <span class="text-blue-400">X(성장)</span>를<br/>만들어내는 회사.
+              </h2>
+              <div class="flex flex-nowrap gap-2 mt-4 w-full">
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 text-base font-bold border border-blue-400/40 text-white rounded-full bg-gradient-to-br from-blue-500/10 to-transparent hover:border-blue-400/70 hover:bg-blue-500/15 transition-all whitespace-nowrap" style="box-shadow: 0 0 20px -8px rgba(96,165,250,0.4);">
+                  Marketing <span class="text-blue-400 font-black text-base" style="font-family: var(--font-sora);">X</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 text-base font-bold border border-blue-400/40 text-white rounded-full bg-gradient-to-br from-blue-500/10 to-transparent hover:border-blue-400/70 hover:bg-blue-500/15 transition-all whitespace-nowrap" style="box-shadow: 0 0 20px -8px rgba(96,165,250,0.4);">
+                  Brand <span class="text-blue-400 font-black text-base" style="font-family: var(--font-sora);">X</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 text-base font-bold border border-blue-400/40 text-white rounded-full bg-gradient-to-br from-blue-500/10 to-transparent hover:border-blue-400/70 hover:bg-blue-500/15 transition-all whitespace-nowrap" style="box-shadow: 0 0 20px -8px rgba(96,165,250,0.4);">
+                  Technology <span class="text-blue-400 font-black text-base" style="font-family: var(--font-sora);">X</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 text-base font-bold border border-blue-400/40 text-white rounded-full bg-gradient-to-br from-blue-500/10 to-transparent hover:border-blue-400/70 hover:bg-blue-500/15 transition-all whitespace-nowrap" style="box-shadow: 0 0 20px -8px rgba(96,165,250,0.4);">
+                  Human <span class="text-blue-400 font-black text-base" style="font-family: var(--font-sora);">X</span>
+                </span>
+              </div>
+            </div>
+            <div class="md:w-1/2 grid grid-cols-2">
+              <div class="p-8 border-b border-r border-dashed border-white/20 flex flex-col justify-center group hover:bg-white/[0.03] transition-colors">
+                <div class="flex items-baseline gap-3 mb-3 whitespace-nowrap">
+                  <span class="text-3xl font-black text-blue-400 group-hover:scale-110 transition-transform inline-block leading-none" style="font-family: var(--font-sora);">X</span>
+                  <span class="text-3xl font-bold text-white leading-none tracking-tight">Unknown</span>
+                </div>
+                <p class="text-gray-400 text-base leading-relaxed">기존 공식으로는 풀 수 없는 변수</p>
+              </div>
+              <div class="p-8 border-b border-dashed border-white/20 flex flex-col justify-center group hover:bg-white/[0.03] transition-colors">
+                <div class="flex items-baseline gap-3 mb-3 whitespace-nowrap">
+                  <span class="text-3xl font-black text-blue-400 group-hover:scale-110 transition-transform inline-block leading-none" style="font-family: var(--font-sora);">X</span>
+                  <span class="text-3xl font-bold text-white leading-none tracking-tight">Exponential</span>
+                </div>
+                <p class="text-gray-400 text-base leading-relaxed">선형이 아닌 지수 성장</p>
+              </div>
+              <div class="p-8 border-r border-dashed border-white/20 flex flex-col justify-center group hover:bg-white/[0.03] transition-colors">
+                <div class="flex items-baseline gap-3 mb-3 whitespace-nowrap">
+                  <span class="text-3xl font-black text-blue-400 group-hover:scale-110 transition-transform inline-block leading-none" style="font-family: var(--font-sora);">X</span>
+                  <span class="text-3xl font-bold text-white leading-none tracking-tight">Cross</span>
+                </div>
+                <p class="text-gray-400 text-base leading-relaxed">경계를 넘는 조직·사업·사람</p>
+              </div>
+              <div class="p-8 flex flex-col justify-center group hover:bg-white/[0.03] transition-colors">
+                <div class="flex items-baseline gap-3 mb-3 whitespace-nowrap">
+                  <span class="text-3xl font-black text-blue-400 group-hover:scale-110 transition-transform inline-block leading-none" style="font-family: var(--font-sora);">X</span>
+                  <span class="text-3xl font-bold text-white leading-none tracking-tight">Transformation</span>
+                </div>
+                <p class="text-gray-400 text-base leading-relaxed">AI Transformation의 핵심</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============ ORIGIN — 머스트컴퍼니 스핀오프 ============ -->
+    <section class="relative w-full bg-black border-y border-dashed border-white/20 py-20" style="font-family: var(--font-sora);">
+      <div class="max-w-[1600px] mx-auto">
+        <h2 class="text-4xl sm:text-5xl font-bold text-white mb-12 leading-tight">13년된 글로벌 기업에서<br/>스핀오프.</h2>
+        
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-0 border border-dashed border-white/30">
+          <div class="p-8 text-center border-r border-dashed border-white/20">
+            <p class="text-4xl font-black text-white mb-1"><span data-count="13" data-suffix="년">13년</span></p>
+            <p class="text-gray-400 text-base">2012년 설립</p>
+          </div>
+          <div class="p-8 text-center border-r border-dashed border-white/20">
+            <p class="text-4xl font-black text-white mb-1"><span data-count="14" data-suffix="+">14+</span></p>
+            <p class="text-gray-400 text-base">글로벌 거점 국가</p>
+          </div>
+          <div class="p-8 text-center border-r border-dashed border-white/20">
+            <p class="text-4xl font-black text-white mb-1"><span data-count="350" data-suffix="+">350+</span></p>
+            <p class="text-gray-400 text-base"> 임직원</p>
+          </div>
+          <div class="p-8 text-center border-r border-dashed border-white/20">
+            <p class="text-4xl font-black text-white mb-1"><span data-count="30" data-suffix="+">30+</span></p>
+            <p class="text-gray-400 text-base">기업 고객사</p>
+          </div>
+          
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============ TRUSTED PARTNERS ============ -->
+    <section class="relative w-full bg-black border-b border-dashed border-white/20 py-20" style="font-family: var(--font-sora);">
+      <div class="max-w-[1600px] mx-auto">
+        <h2 class="text-4xl sm:text-5xl font-bold text-white mb-12 leading-tight">신뢰한 파트너들.</h2>
+
+        <div class="relative border border-dashed border-white/30 bg-black py-14 overflow-hidden">
+          <div class="partner-marquee-track">
+            <img src="assets/logo01.svg" alt="Partner 01" class="partner-logo" />
+            <img src="assets/logo02.svg" alt="Partner 02" class="partner-logo" />
+            <img src="assets/logo03.svg" alt="Partner 03" class="partner-logo" />
+            <img src="assets/logo04.svg" alt="Partner 04" class="partner-logo" />
+            <img src="assets/logo05.svg" alt="Partner 05" class="partner-logo" />
+            <img src="assets/logo06.svg" alt="Partner 06" class="partner-logo" />
+            <img src="assets/logo07.svg" alt="Partner 07" class="partner-logo" />
+            <img src="assets/logo08.svg" alt="Partner 08" class="partner-logo" />
+            <img src="assets/logo09.svg" alt="Partner 09" class="partner-logo" />
+            <img src="assets/logo01.svg" alt="" aria-hidden="true" class="partner-logo" />
+            <img src="assets/logo02.svg" alt="" aria-hidden="true" class="partner-logo" />
+            <img src="assets/logo03.svg" alt="" aria-hidden="true" class="partner-logo" />
+            <img src="assets/logo04.svg" alt="" aria-hidden="true" class="partner-logo" />
+            <img src="assets/logo05.svg" alt="" aria-hidden="true" class="partner-logo" />
+            <img src="assets/logo06.svg" alt="" aria-hidden="true" class="partner-logo" />
+            <img src="assets/logo07.svg" alt="" aria-hidden="true" class="partner-logo" />
+            <img src="assets/logo08.svg" alt="" aria-hidden="true" class="partner-logo" />
+            <img src="assets/logo09.svg" alt="" aria-hidden="true" class="partner-logo" />
+          </div>
+          <div class="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black to-transparent z-10"></div>
+          <div class="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-black to-transparent z-10"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ AX FEATURES — 5 CORE BU ============ -->
+    <section id="services" class="relative w-full min-h-screen flex flex-col justify-center bg-white dark:bg-black" style="font-family: var(--font-sora);">
+      <div class="max-w-[1600px] mx-auto w-full flex flex-col" style="height: 100vh; padding-top: 7rem; padding-bottom: 4rem;">
+
+        <div class="mb-5">
+          <h2 class="text-4xl sm:text-5xl font-bold mb-3 text-gray-900 dark:text-white leading-tight">
+            왜 XNEX 이어야만 하는가?
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-0 border border-dashed border-white/40 overflow-hidden relative flex-1">
+          <!-- Card 1: X-그로스 -->
+          <div class="group relative p-7 transition-all duration-300 border-r border-b border-dashed border-white/40 bg-white dark:bg-black col-span-1 flex flex-col justify-between">
+            <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color: var(--primary);"></span>
+            <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color: var(--primary);"></span>
+            <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color: var(--primary);"></span>
+            <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color: var(--primary);"></span>
+            <div class="flex flex-col space-y-5">
+              <div class="w-14 h-14 rounded-xl flex items-center justify-center bg-black/5 dark:bg-white/10">
+                <i data-lucide="trending-up" class="w-7 h-7 text-blue-500"></i>
+              </div>
+              <div class="space-y-3">
+                <h3 class="font-black text-gray-900 dark:text-gray-100 tracking-tight text-4xl">
+                  X-그로스
+                  <span class="ml-2 text-base text-gray-500 dark:text-gray-400 font-normal">IT+데이터+콘텐츠 기반 마케팅 에이전시</span>
+                </h3>
+                <p class="text-lg text-gray-600 dark:text-gray-300 leading-snug">광고비 ₩200억 직접 집행해본 사업가 관점의 ROI 기반 캠페인 설계. 실행까지 직접 합니다.</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 text-base text-gray-500 dark:text-gray-400 mt-2">
+              <span class="px-2 py-1 rounded-md bg-black/5 dark:bg-white/10">#브랜드전략</span>
+              <span class="px-2 py-1 rounded-md bg-black/5 dark:bg-white/10">#마케팅계획</span>
+              <span class="px-2 py-1 rounded-md bg-black/5 dark:bg-white/10">#오너십실행</span>
+            </div>
+          </div>
+
+          <!-- Card 2: X-빌드 -->
+          <div class="group relative p-7 transition-all duration-300 border-b border-dashed border-white/40 bg-white dark:bg-black col-span-1 flex flex-col justify-between">
+            <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color: var(--primary);"></span>
+            <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color: var(--primary);"></span>
+            <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color: var(--primary);"></span>
+            <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color: var(--primary);"></span>
+            <div class="flex flex-col space-y-5">
+              <div class="w-14 h-14 rounded-xl flex items-center justify-center bg-black/5 dark:bg-white/10">
+                <i data-lucide="cpu" class="w-7 h-7 text-amber-500"></i>
+              </div>
+              <div class="space-y-3">
+                <h3 class="font-black text-gray-900 dark:text-gray-100 tracking-tight text-4xl">
+                  X-빌드
+                  <span class="ml-2 text-base text-gray-500 dark:text-gray-400 font-normal">AX 컨설팅&SW개발 에이전시</span>
+                </h3>
+                <p class="text-lg text-gray-600 dark:text-gray-300 leading-snug">AI 도입 무료 진단 → 정밀 진단 → AI 툴 개발 → 임직원 교육. 산업 이해 먼저, 기술 다음.</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 text-base text-gray-500 dark:text-gray-400 mt-2">
+              <span class="px-2 py-1 rounded-md bg-black/5 dark:bg-white/10">#AX진단</span>
+              <span class="px-2 py-1 rounded-md bg-black/5 dark:bg-white/10">#AI툴개발</span>
+              <span class="px-2 py-1 rounded-md bg-black/5 dark:bg-white/10">#임직원교육</span>
+            </div>
+          </div>
+
+          <!-- Card 3: X-허브 -->
+          <div class="group relative p-7 transition-all duration-300 border-r border-dashed border-white/40 bg-white dark:bg-black col-span-1 flex flex-col justify-between">
+            <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color: var(--primary);"></span>
+            <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color: var(--primary);"></span>
+            <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color: var(--primary);"></span>
+            <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color: var(--primary);"></span>
+            <div class="flex flex-col space-y-5">
+              <div class="w-14 h-14 rounded-xl flex items-center justify-center bg-black/5 dark:bg-white/10">
+                <i data-lucide="layout-grid" class="w-7 h-7 text-emerald-500"></i>
+              </div>
+              <div class="space-y-3">
+                <h3 class="font-black text-gray-900 dark:text-gray-100 tracking-tight text-4xl">
+                  X-허브
+                  <span class="ml-2 text-base text-gray-500 dark:text-gray-400 font-normal">자체 AI SaaS 플랫폼</span>
+                </h3>
+                <p class="text-lg text-gray-600 dark:text-gray-300 leading-snug">직접 굴려본 도구만 서비스로 런칭. PAGE-X · RUNWAY-X · CAST-X 등 6종+ 출시 예정.</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 text-base text-gray-500 dark:text-gray-400 mt-2">
+              <span class="px-2 py-1 rounded-md bg-black/5 dark:bg-white/10">#SaaS</span>
+              <span class="px-2 py-1 rounded-md bg-black/5 dark:bg-white/10">#랜딩자동화</span>
+              <span class="px-2 py-1 rounded-md bg-black/5 dark:bg-white/10">#AI모델컷</span>
+            </div>
+          </div>
+
+          <!-- Card 4+5: X-넥스트 + 퀀텀점프 -->
+          <div class="group relative p-7 transition-all duration-300 bg-white dark:bg-black col-span-1 flex flex-col justify-between">
+            <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color: var(--primary);"></span>
+            <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color: var(--primary);"></span>
+            <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color: var(--primary);"></span>
+            <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color: var(--primary);"></span>
+            <div class="flex flex-col space-y-5">
+              <div class="flex gap-2">
+                <div class="w-14 h-14 rounded-xl flex items-center justify-center bg-black/5 dark:bg-white/10">
+                  <i data-lucide="building-2" class="w-7 h-7 text-purple-500"></i>
+                </div>
+                <div class="w-14 h-14 rounded-xl flex items-center justify-center bg-black/5 dark:bg-white/10">
+                  <i data-lucide="zap" class="w-7 h-7 text-yellow-500"></i>
+                </div>
+              </div>
+              <div class="space-y-3">
+                <h3 class="font-black text-gray-900 dark:text-gray-100 tracking-tight text-4xl">
+                  X-넥스트 · 퀀텀점프
+                  <span class="ml-2 text-base text-gray-500 dark:text-gray-400 font-normal">공유오피스 · 창업아카데미</span>
+                </h3>
+                <p class="text-lg text-gray-600 dark:text-gray-300 leading-snug">시청역 정동 350평 공유오피스 (7월 런칭) + SaaS·K뷰티 실전 창업 아카데미. 수료 후 XNEX 생태계 파트너로 편입.</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 text-base text-gray-500 dark:text-gray-400 mt-2">
+              <span class="px-2 py-1 rounded-md bg-black/5 dark:bg-white/10">#공유오피스</span>
+              <span class="px-2 py-1 rounded-md bg-black/5 dark:bg-white/10">#창업아카데미</span>
+              <span class="px-2 py-1 rounded-md bg-black/5 dark:bg-white/10">#K뷰티</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============ PROJECT SHOWCASE ============ -->
+    <section class="py-24 w-full bg-black border-t border-dashed border-white/20 overflow-hidden" style="font-family: var(--font-sora);">
+      <div class="max-w-[1600px] mx-auto mb-10">
+        <h2 class="text-4xl sm:text-5xl font-bold text-white leading-tight text-center">XNEX 사업영역</h2>
+      </div>
+      <div
+        id="showcase-scroll"
+        class="flex gap-12 px-[max(3rem,calc((100vw-80rem)/2))] overflow-x-auto overflow-y-visible cursor-grab select-none no-scrollbar snap-x snap-mandatory scroll-smooth py-12"
+      >
+        <!-- Card 1: X-그로스 -->
+        <div class="relative flex-shrink-0 w-[85vw] md:w-[70rem] h-[45vh] md:h-[50vh] snap-center overflow-visible group">
+          <div class="absolute inset-0 rounded-[1.5rem] overflow-hidden border border-white/10" style="background: linear-gradient(135deg, #0a0a1a 0%, #0d1a3a 100%);">
+            <div class="absolute inset-0 opacity-20" style="background: radial-gradient(ellipse at 30% 50%, #3b82f6 0%, transparent 60%);"></div>
+            <div class="absolute bottom-0 right-0 w-64 h-64 opacity-10" style="background: radial-gradient(circle, #60a5fa 0%, transparent 70%);"></div>
+          </div>
+          <div class="relative h-full flex flex-col justify-center gap-8 p-12 z-10">
+            <div>
+              <p class="text-sm font-bold tracking-widest text-blue-400 uppercase mb-3">CORE 1</p>
+              <h2 class="text-4xl md:text-6xl font-black text-white mb-3 tracking-tighter leading-tight">X-그로스</h2>
+              <p class="text-xl text-white/60 font-medium">IT+데이터+콘텐츠 기반 마케팅 에이전시</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              
+              <div class="col-span-2 bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm">
+                <p class="text-lg text-gray-300 leading-relaxed">현황분석 → 한정 예산 내 최대 효과 설계
+→ 캠페인 기획 → 디테일한 실행. 주니어 마케터가 아닌 <span class="text-white font-bold">광고비 연 최대 200억을 집행해본 연쇄창업가</span>가 직접 전략을 수립하고 기획합니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: X-빌드 -->
+        <div class="relative flex-shrink-0 w-[85vw] md:w-[70rem] h-[45vh] md:h-[50vh] snap-center overflow-visible group">
+          <div class="absolute inset-0 rounded-[1.5rem] overflow-hidden border border-white/10" style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1000 100%);">
+            <div class="absolute inset-0 opacity-20" style="background: radial-gradient(ellipse at 70% 40%, #f59e0b 0%, transparent 60%);"></div>
+          </div>
+          <div class="relative h-full flex flex-col justify-center gap-8 p-12 z-10">
+            <div>
+              <p class="text-sm font-bold tracking-widest text-amber-400 uppercase mb-3">CORE 2</p>
+              <h2 class="text-4xl md:text-6xl font-black text-white mb-3 tracking-tighter leading-tight">X-빌드</h2>
+              <p class="text-xl text-white/60 font-medium">AX 컨설팅 · SW 개발 에이전시</p>
+            </div>
+            <div class="grid grid-cols-4 gap-3">
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center backdrop-blur-sm">
+                <p class="text-sm font-bold text-amber-400 mb-2">01</p>
+                <p class="text-base font-bold text-white">무료 AX 진단</p>
+                <p class="text-base text-gray-500 mt-1">설문 → 5p 리포트</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center backdrop-blur-sm">
+                <p class="text-sm font-bold text-amber-400 mb-2">02</p>
+                <p class="text-base font-bold text-white">유료 정밀 진단</p>
+                <p class="text-base text-gray-500 mt-1">90분 → 30p 리포트</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center backdrop-blur-sm">
+                <p class="text-sm font-bold text-amber-400 mb-2">03</p>
+                <p class="text-base font-bold text-white">AI 툴 개발</p>
+                <p class="text-base text-gray-500 mt-1">맞춤형 개발</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center backdrop-blur-sm">
+                <p class="text-sm font-bold text-amber-400 mb-2">04</p>
+                <p class="text-base font-bold text-white">임직원 교육</p>
+                <p class="text-base text-gray-500 mt-1">운영 매뉴얼</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: X-허브 SaaS -->
+        <div class="relative flex-shrink-0 w-[85vw] md:w-[70rem] h-[45vh] md:h-[50vh] snap-center overflow-visible group">
+          <div class="absolute inset-0 rounded-[1.5rem] overflow-hidden border border-white/10" style="background: linear-gradient(135deg, #001a10 0%, #000d0a 100%);">
+            <div class="absolute inset-0 opacity-20" style="background: radial-gradient(ellipse at 40% 60%, #10b981 0%, transparent 60%);"></div>
+          </div>
+          <div class="relative h-full flex flex-col justify-center gap-8 p-12 z-10">
+            <div>
+              <p class="text-sm font-bold tracking-widest text-emerald-400 uppercase mb-3">CORE 3 · 자체 운영 SaaS</p>
+              <h2 class="text-4xl md:text-6xl font-black text-white mb-3 tracking-tighter leading-tight">X-허브</h2>
+              <p class="text-xl text-white/60 font-medium">만들고, 써보고, 검증한 AI SaaS — 그것만 모았습니다.</p>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div class="bg-white/5 border border-emerald-500/20 rounded-xl p-4 backdrop-blur-sm hover:border-emerald-400/50 transition-colors">
+                <p class="text-base font-black text-emerald-400 mb-1">PAGE-X</p>
+                <p class="text-base text-gray-400">랜딩페이지 자동화</p>
+              </div>
+              <div class="bg-white/5 border border-emerald-500/20 rounded-xl p-4 backdrop-blur-sm hover:border-emerald-400/50 transition-colors">
+                <p class="text-base font-black text-emerald-400 mb-1">RUNWAY-X</p>
+                <p class="text-base text-gray-400">AI 모델컷·런웨이</p>
+              </div>
+              <div class="bg-white/5 border border-emerald-500/20 rounded-xl p-4 backdrop-blur-sm hover:border-emerald-400/50 transition-colors">
+                <p class="text-base font-black text-emerald-400 mb-1">CAST-X</p>
+                <p class="text-base text-gray-400">인스타그램 자동화</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm">
+                <p class="text-base font-black text-gray-400 mb-1">EVA-X</p>
+                <p class="text-base text-gray-500">AI 인사 성과 평가</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm">
+                <p class="text-base font-black text-gray-400 mb-1">OPIS-X</p>
+                <p class="text-base text-gray-500">AEO 점수 진단</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm flex items-center justify-center">
+                <p class="text-base text-gray-600">+ 추가 라인업 출시 예정</p>
+                <p class="text-base text-gray-600">→ 지금도 새로운 AI SaaS가 만들어지고 있습니다. </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: X-넥스트 -->
+        <div class="relative flex-shrink-0 w-[85vw] md:w-[70rem] h-[45vh] md:h-[50vh] snap-center overflow-visible group">
+          <div class="absolute inset-0 rounded-[1.5rem] overflow-hidden border border-white/10" style="background: linear-gradient(135deg, #0d0010 0%, #1a0030 100%);">
+            <div class="absolute inset-0 opacity-20" style="background: radial-gradient(ellipse at 60% 30%, #a855f7 0%, transparent 60%);"></div>
+          </div>
+          <div class="relative h-full flex flex-col justify-center gap-8 p-12 z-10">
+            <div>
+              <p class="text-sm font-bold tracking-widest text-purple-400 uppercase mb-3">CORE 4 · 공유 오피스</p>
+              <h2 class="text-4xl md:text-6xl font-black text-white mb-3 tracking-tighter leading-tight">X-넥스트</h2>
+              <p class="text-xl text-white/60 font-medium">스타트업&amp;예비창업가의 공유 오피스</p>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="col-span-2 bg-white/5 border border-purple-500/20 rounded-xl p-5 backdrop-blur-sm">
+                <p class="text-4xl font-black text-white mb-1">350평</p>
+                <p class="text-sm text-gray-400 mb-2">시청역 정동 삼정 아트테라스 B2</p>
+                <p class="text-sm text-purple-400 font-bold">2026년 7월 런칭 예정</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-5 backdrop-blur-sm flex flex-col justify-center">
+                <p class="text-base font-black text-white mb-1">XNEX 생태계</p>
+                <p class="text-base text-gray-500">스타트업과 함께 성장하는 공간</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5: 퀀텀점프 -->
+        <div class="relative flex-shrink-0 w-[85vw] md:w-[70rem] h-[45vh] md:h-[50vh] snap-center overflow-visible group">
+          <div class="absolute inset-0 rounded-[1.5rem] overflow-hidden border border-white/10" style="background: linear-gradient(135deg, #0a0800 0%, #1a1400 100%);">
+            <div class="absolute inset-0 opacity-20" style="background: radial-gradient(ellipse at 40% 70%, #eab308 0%, transparent 60%);"></div>
+          </div>
+          <div class="relative h-full flex flex-col justify-center gap-8 p-12 z-10">
+            <div>
+              <p class="text-sm font-bold tracking-widest text-yellow-400 uppercase mb-3">CORE 5 · 창업 아카데미</p>
+              <h2 class="text-4xl md:text-6xl font-black text-white mb-3 tracking-tighter leading-tight">퀀텀점프</h2>
+              <p class="text-xl text-white/60 font-medium">실전형 AI 창업 아카데미</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-white/5 border border-yellow-500/20 rounded-xl p-5 backdrop-blur-sm">
+                <p class="text-base font-black text-yellow-400 mb-2">SaaS 개발 4주</p>
+                <p class="text-base text-gray-400">PRD → AI 코딩 → 배포 → 런칭·마케팅. 런칭 후 XNEX 공동 마케팅.</p>
+              </div>
+              <div class="bg-white/5 border border-yellow-500/20 rounded-xl p-5 backdrop-blur-sm">
+                <p class="text-base font-black text-yellow-400 mb-2">K뷰티 브랜드 4주</p>
+                <p class="text-base text-gray-400">기획 → OEM 제조 → 유통 → 글로벌 수출. 런칭 후 유통 채널 연결.</p>
+              </div>
+              <div class="col-span-2 bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm">
+                <p class="text-base text-gray-300 leading-relaxed">수료 후 단순 수료가 아닌 <span class="text-white font-bold">XNEX 생태계의 사업 파트너로 편입</span>됩니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-shrink-0 w-[15vw]"></div>
+      </div>
+    </section>
+
+    <!-- ============ WHY US — 4가지 차별점 ============ -->
+    <section class="relative w-full bg-black border-y border-dashed border-white/20 py-24" style="font-family: var(--font-sora);">
+      <div class="max-w-[1600px] mx-auto">
+        <h2 class="text-4xl sm:text-5xl font-bold text-white mb-16 leading-tight">XNEX는 무엇이 다른가?</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-0 border border-dashed border-white/30">
+          <!-- 01 AI Native -->
+          <div class="diff-card group relative p-10 border-r border-b border-dashed border-white/20 cursor-pointer overflow-hidden" data-idx="0">
+            <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2 transition-colors duration-300" style="border-color:rgba(255,255,255,0.3)"></span>
+            <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2 transition-colors duration-300" style="border-color:rgba(255,255,255,0.3)"></span>
+            <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2 transition-colors duration-300" style="border-color:rgba(255,255,255,0.3)"></span>
+            <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2 transition-colors duration-300" style="border-color:rgba(255,255,255,0.3)"></span>
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(ellipse at 20% 50%, rgba(59,130,246,0.08) 0%, transparent 70%);"></div>
+            <p class="text-7xl font-black text-white/10 mb-4 group-hover:text-blue-500/20 transition-colors duration-300">01</p>
+            <h3 class="text-4xl font-black text-white mb-2">AI Native</h3>
+            <p class="text-sm text-blue-400 font-bold tracking-widest uppercase mb-4">도구가 아닌 정체성</p>
+            <p class="text-base text-gray-400 leading-relaxed">회사의 모든 워크플로가 처음부터 AI 위에서 설계됨. 'AI를 도입한 회사'가 아니라 <span class="text-white">'AI 위에서 태어난 회사'.</span></p>
+          </div>
+          <!-- 02 Proof by Self-use -->
+          <div class="diff-card group relative p-10 border-b border-dashed border-white/20 cursor-pointer overflow-hidden" data-idx="1">
+            <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color:rgba(255,255,255,0.3)"></span>
+            <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color:rgba(255,255,255,0.3)"></span>
+            <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color:rgba(255,255,255,0.3)"></span>
+            <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color:rgba(255,255,255,0.3)"></span>
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(ellipse at 80% 50%, rgba(16,185,129,0.08) 0%, transparent 70%);"></div>
+            <p class="text-7xl font-black text-white/10 mb-4 group-hover:text-emerald-500/20 transition-colors duration-300">02</p>
+            <h3 class="text-4xl font-black text-white mb-2">Proof by Self-use</h3>
+            <p class="text-sm text-emerald-400 font-bold tracking-widest uppercase mb-4">직접 개발하고 사용하며 검증이 끝난 AI SaaS</p>
+            <p class="text-base text-gray-400 leading-relaxed">EVA-X · OPIS-X · CRM-X · DOCU-X · REPORT-X · AEO-X — <span class="text-white">우리가 매일 쓰는 도구가 곧 외부 영업의 레퍼런스.</span></p>
+          </div>
+          <!-- 03 Convergence -->
+          <div class="diff-card group relative p-10 border-r border-dashed border-white/20 cursor-pointer overflow-hidden" data-idx="2">
+            <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color:rgba(255,255,255,0.3)"></span>
+            <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color:rgba(255,255,255,0.3)"></span>
+            <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color:rgba(255,255,255,0.3)"></span>
+            <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color:rgba(255,255,255,0.3)"></span>
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(ellipse at 20% 80%, rgba(168,85,247,0.08) 0%, transparent 70%);"></div>
+            <p class="text-7xl font-black text-white/10 mb-4 group-hover:text-purple-500/20 transition-colors duration-300">03</p>
+            <h3 class="text-4xl font-black text-white mb-2">Convergence</h3>
+            <p class="text-sm text-purple-400 font-bold tracking-widest uppercase mb-4">다양한 산업의 특이점을 융·복합</p>
+            <p class="text-base text-gray-400 leading-relaxed">마케터가 엔지니어를, 엔지니어가 리테일을 이해. <span class="text-white">산업의 경계를 무너뜨린 크리에이티브한 기획력.</span></p>
+          </div>
+          <!-- 04 Execution Ability -->
+          <div class="diff-card group relative p-10 cursor-pointer overflow-hidden" data-idx="3">
+            <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color:rgba(255,255,255,0.3)"></span>
+            <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color:rgba(255,255,255,0.3)"></span>
+            <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color:rgba(255,255,255,0.3)"></span>
+            <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color:rgba(255,255,255,0.3)"></span>
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(ellipse at 80% 80%, rgba(234,179,8,0.08) 0%, transparent 70%);"></div>
+            <p class="text-7xl font-black text-white/10 mb-4 group-hover:text-yellow-500/20 transition-colors duration-300">04</p>
+            <h3 class="text-4xl font-black text-white mb-2">Execution Ability</h3>
+            <p class="text-sm text-yellow-400 font-bold tracking-widest uppercase mb-4">능동적인 실행력</p>
+            <p class="text-base text-gray-400 leading-relaxed">클라이언트의 목적·목표 달성을 위해 <span class="text-white">전문가 포지션에서 먼저 제안하고 세밀하게 속도 있게 실행.</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 4D PROCESS ============ -->
+    <section class="relative max-w-[1600px] mx-auto my-32 w-full" style="font-family: var(--font-sora);">
+      <div class="mb-10 px-0">
+        <h2 class="text-4xl sm:text-5xl font-bold text-white leading-tight">4D 프로세스.</h2>
+        <p class="text-gray-500 text-base mt-2">Discovery → Design → Deliver → Drive</p>
+      </div>
+
+      <div class="relative border border-dashed border-white/30 overflow-hidden">
+        <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2" style="border-color: var(--primary);"></span>
+        <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2" style="border-color: var(--primary);"></span>
+        <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2" style="border-color: var(--primary);"></span>
+        <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2" style="border-color: var(--primary);"></span>
+
+        <!-- Progress bar track -->
+        <div class="h-1 bg-white/5 relative overflow-hidden">
+          <div id="process-bar" class="h-full bg-blue-500 transition-all duration-700" style="width: 25%;"></div>
+        </div>
+
+        <div class="flex flex-col md:flex-row">
+          <!-- Step buttons -->
+          <div class="md:w-64 flex-shrink-0 border-r border-dashed border-white/20">
+            <button class="process-step w-full text-left px-8 py-6 border-b border-dashed border-white/20 transition-all duration-200 hover:bg-white/5 active-step" data-step="0">
+              <p class="text-sm text-blue-400 font-bold tracking-widest mb-1">D1</p>
+              <p class="text-white font-black text-lg">Discovery</p>
+            </button>
+            <button class="process-step w-full text-left px-8 py-6 border-b border-dashed border-white/20 transition-all duration-200 hover:bg-white/5 text-gray-500" data-step="1">
+              <p class="text-sm text-gray-600 font-bold tracking-widest mb-1">D2</p>
+              <p class="font-black text-lg">Design</p>
+            </button>
+            <button class="process-step w-full text-left px-8 py-6 border-b border-dashed border-white/20 transition-all duration-200 hover:bg-white/5 text-gray-500" data-step="2">
+              <p class="text-sm text-gray-600 font-bold tracking-widest mb-1">D3</p>
+              <p class="font-black text-lg">Deliver</p>
+            </button>
+            <button class="process-step w-full text-left px-8 py-6 transition-all duration-200 hover:bg-white/5 text-gray-500" data-step="3">
+              <p class="text-sm text-gray-600 font-bold tracking-widest mb-1">D4</p>
+              <p class="font-black text-lg">Drive</p>
+            </button>
+          </div>
+
+          <!-- Step content -->
+          <div class="flex-1 p-10 min-h-[260px] flex flex-col justify-center">
+            <div id="process-content-0" class="process-content">
+              <p class="text-sm font-bold text-blue-400 tracking-widest uppercase mb-3">D1 · Discovery</p>
+              <h3 class="text-4xl font-black text-white mb-4">무료 진단 + 정밀 진단으로<br/>As-Is·니즈 파악.</h3>
+              <div class="flex gap-4">
+                <div class="flex-1 bg-white/5 border border-white/10 rounded-xl p-4">
+                  <p class="text-sm text-blue-400 font-bold mb-1">무료 AX 진단</p>
+                  <p class="text-base text-gray-400">설문 기반 AI 자동 분석 → 5p 진단 리포트 → 30분 영상회의</p>
+                </div>
+                <div class="flex-1 bg-white/5 border border-white/10 rounded-xl p-4">
+                  <p class="text-sm text-blue-400 font-bold mb-1">유료 정밀 진단</p>
+                  <p class="text-base text-gray-400">대면 90분 미팅 → 30p 리포트 + 우선순위 로드맵 + 단계별 비용</p>
+                </div>
+              </div>
+            </div>
+            <div id="process-content-1" class="process-content hidden">
+              <p class="text-sm font-bold text-blue-400 tracking-widest uppercase mb-3">D2 · Design</p>
+              <h3 class="text-4xl font-black text-white mb-4">PRD · 견적 · 우선순위 로드맵 · KPI 설계.</h3>
+              <p class="text-base text-gray-400 leading-relaxed">진단 결과를 바탕으로 실행 가능한 단계별 플랜과 명확한 KPI를 함께 설계합니다. 기술이 아니라 비즈니스 목표 중심으로 설계합니다.</p>
+            </div>
+            <div id="process-content-2" class="process-content hidden">
+              <p class="text-sm font-bold text-blue-400 tracking-widest uppercase mb-3">D3 · Deliver</p>
+              <h3 class="text-4xl font-black text-white mb-4">실행 · 베타 · 검증 · 임직원 교육.</h3>
+              <p class="text-base text-gray-400 leading-relaxed">설계한 대로 AI 툴을 개발하고, 베타 운영을 통해 현장에서 검증합니다. 이후 임직원 교육과 운영 매뉴얼까지 제공합니다.</p>
+            </div>
+            <div id="process-content-3" class="process-content hidden">
+              <p class="text-sm font-bold text-blue-400 tracking-widest uppercase mb-3">D4 · Drive</p>
+              <h3 class="text-4xl font-black text-white mb-4">운영 · 리포트 · 최적화.</h3>
+              <p class="text-base text-gray-400 leading-relaxed">납품 후 종료가 아닙니다. 월간 KPI 리포트와 함께 지속적으로 운영하고 고도화합니다. 업무에 녹아들어 실제로 쓰이는 시스템을 만듭니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MANPOWER SECTION ============ -->
+    <section id="team" class="relative max-w-[1600px] mx-auto my-32 w-full" style="font-family: var(--font-sora);">
+
+      <!-- Section title (other-section style) -->
+      <div class="mb-12">
+        <h2 class="text-4xl sm:text-5xl font-bold text-white mb-4 leading-tight">왜 엑스넥스가 잘할 수밖에 없는가.</h2>
+        <p class="text-gray-400 text-base sm:text-lg leading-relaxed">전원 풀스택 운영자 출신. 기획·디자인·개발·영업이 한 자리에서 결정됩니다.</p>
+      </div>
+
+      <!-- Member grid: 3 x 2 (RED GREEN YELLOW / BLUE PINK YOU) -->
+      <div class="relative border border-dashed border-white/40 bg-black overflow-hidden grid grid-cols-1 md:grid-cols-3 gap-0">
+        <span class="absolute -left-px -top-px block size-4 border-l-2 border-t-2 z-20" style="border-color: var(--primary);"></span>
+        <span class="absolute -right-px -top-px block size-4 border-r-2 border-t-2 z-20" style="border-color: var(--primary);"></span>
+        <span class="absolute -bottom-px -left-px block size-4 border-b-2 border-l-2 z-20" style="border-color: var(--primary);"></span>
+        <span class="absolute -bottom-px -right-px block size-4 border-b-2 border-r-2 z-20" style="border-color: var(--primary);"></span>
+
+        <!-- Member 1: RED (r1c1) -->
+        <div class="p-8 border-b md:border-r border-dashed border-white/20 hover:bg-white/[0.03] transition-colors group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="flex-shrink-0 w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-black text-white" style="background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);">
+              <span style="font-family: var(--font-sora);">R</span>
+            </div>
+            <div>
+              <p class="text-white font-black text-lg leading-tight">RED</p>
+              <p class="text-gray-400 text-base mt-0.5">경영 총괄 · 부대표</p>
+            </div>
+          </div>
+          <p class="text-sm font-bold tracking-widest text-red-400 uppercase mb-2">X-그로스 · 퀀텀점프 총괄</p>
+          <p class="text-gray-300 text-base leading-relaxed mb-4">연쇄 창업가 · 현) VC 부대표 · 광고비 ₩200억+ 직접 집행.<br/>사업가 관점의 ROI 기반 캠페인 설계.</p>
+          <div class="flex flex-wrap gap-1.5">
+            <span class="text-base px-3.5 py-1 rounded-full bg-white/5 text-gray-400 border border-white/10">#연쇄창업</span>
+            <span class="text-base px-3.5 py-1 rounded-full bg-white/5 text-gray-400 border border-white/10">#VC</span>
+          </div>
+        </div>
+
+        <!-- Member 2: GREEN (r1c2) -->
+        <div class="p-8 border-b md:border-r border-dashed border-white/20 hover:bg-white/[0.03] transition-colors group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="flex-shrink-0 w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-black text-white" style="background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);">
+              <span style="font-family: var(--font-sora);">G</span>
+            </div>
+            <div>
+              <p class="text-white font-black text-lg leading-tight">GREEN</p>
+              <p class="text-gray-400 text-base mt-0.5">CTO · 이사</p>
+            </div>
+          </div>
+          <p class="text-sm font-bold tracking-widest text-green-400 uppercase mb-2">X-빌드 · X-허브 총괄</p>
+          <p class="text-gray-300 text-base leading-relaxed mb-4">前 코스닥 상장사 대표 · SaaS 아키텍처 책임.<br/>IT 기술을 캠페인에 직접 접목.</p>
+          <div class="flex flex-wrap gap-1.5">
+            <span class="text-base px-3.5 py-1 rounded-full bg-white/5 text-gray-400 border border-white/10">#CTO</span>
+            <span class="text-base px-3.5 py-1 rounded-full bg-white/5 text-gray-400 border border-white/10">#SaaS</span>
+          </div>
+        </div>
+
+        <!-- Member 3: YELLOW (r1c3) -->
+        <div class="p-8 border-b border-dashed border-white/20 hover:bg-white/[0.03] transition-colors group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="flex-shrink-0 w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-black text-white" style="background: linear-gradient(135deg, #eab308 0%, #a16207 100%);">
+              <span style="font-family: var(--font-sora);">Y</span>
+            </div>
+            <div>
+              <p class="text-white font-black text-lg leading-tight">YELLOW</p>
+              <p class="text-gray-400 text-base mt-0.5">AEO 팀장</p>
+            </div>
+          </div>
+          <p class="text-sm font-bold tracking-widest text-yellow-400 uppercase mb-2">사이트-X PM</p>
+          <p class="text-gray-300 text-base leading-relaxed mb-4">AEO 홈페이지 제작·운영 책임.<br/>AI 최적화 구조 설계 전문.</p>
+          <div class="flex flex-wrap gap-1.5">
+            <span class="text-base px-3.5 py-1 rounded-full bg-white/5 text-gray-400 border border-white/10">#AEO</span>
+            <span class="text-base px-3.5 py-1 rounded-full bg-white/5 text-gray-400 border border-white/10">#PM</span>
+          </div>
+        </div>
+
+        <!-- Member 4: BLUE (r2c1) -->
+        <div class="p-8 border-b md:border-b-0 md:border-r border-dashed border-white/20 hover:bg-white/[0.03] transition-colors group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="flex-shrink-0 w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-black text-white" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+              <span style="font-family: var(--font-sora);">B</span>
+            </div>
+            <div>
+              <p class="text-white font-black text-lg leading-tight">BLUE</p>
+              <p class="text-gray-400 text-base mt-0.5">AX 팀장</p>
+            </div>
+          </div>
+          <p class="text-sm font-bold tracking-widest text-blue-400 uppercase mb-2">X-빌드 PM · SaaS 개발</p>
+          <p class="text-gray-300 text-base leading-relaxed mb-4">AX 컨설팅 실행 책임.<br/>산업·업무 진단부터 AI 툴 개발·운영까지 풀사이클 담당.</p>
+          <div class="flex flex-wrap gap-1.5">
+            <span class="text-base px-3.5 py-1 rounded-full bg-white/5 text-gray-400 border border-white/10">#AX</span>
+            <span class="text-base px-3.5 py-1 rounded-full bg-white/5 text-gray-400 border border-white/10">#개발</span>
+          </div>
+        </div>
+
+        <!-- Member 5: PINK (r2c2) -->
+        <div class="p-8 border-b md:border-b-0 md:border-r border-dashed border-white/20 hover:bg-white/[0.03] transition-colors group">
+          <div class="flex items-center gap-4 mb-5">
+            <div class="flex-shrink-0 w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-black text-white" style="background: linear-gradient(135deg, #f472b6 0%, #be185d 100%);">
+              <span style="font-family: var(--font-sora);">A</span>
+            </div>
+            <div>
+              <p class="text-white font-black text-lg leading-tight">PINK</p>
+              <p class="text-gray-400 text-base mt-0.5">PD / Front</p>
+            </div>
+          </div>
+          <p class="text-sm font-bold tracking-widest text-pink-400 uppercase mb-2">디자인 · 프론트엔드</p>
+          <p class="text-gray-300 text-base leading-relaxed mb-4">디자인부터 프론트까지. 비주얼라이징, 브랜딩에 능한 디자이너.<br/>사이트-X 비주얼 총괄.</p>
+          <div class="flex flex-wrap gap-1.5">
+            <span class="text-base px-3.5 py-1 rounded-full bg-white/5 text-gray-400 border border-white/10">#디자인</span>
+            <span class="text-base px-3.5 py-1 rounded-full bg-white/5 text-gray-400 border border-white/10">#브랜딩</span>
+          </div>
+        </div>
+
+        <!-- Member 6: YOU (r2c3) — Open seat -->
+        <div class="p-8 border-dashed border-white/20 group flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-4 mb-5">
+              <div class="flex-shrink-0 w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-black text-white/70 border-2 border-dashed border-white/30 group-hover:border-white/80 group-hover:text-white transition-all" style="font-family: var(--font-sora);">
+                X
+              </div>
+              <div>
+                <p class="text-white font-black text-lg leading-tight">YOU</p>
+                <p class="text-gray-400 text-base mt-0.5">당신의 X</p>
+              </div>
+            </div>
+            <p class="text-sm font-bold tracking-widest text-white/60 uppercase mb-2">당신도 함께할 수 있습니다</p>
+            <p class="text-gray-300 text-base leading-relaxed mb-4">풀어보고 싶은 <span class="text-white font-bold" style="font-family: var(--font-sora);">X</span>가 있다면, 엑스넥스의 다음 X를 함께 만들어 갑시다.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============ CTA SECTION ============ -->
+    <section class="relative w-full min-h-[80vh] flex items-center justify-center overflow-hidden bg-black py-24" style="font-family: var(--font-sora);">
+      <video id="cta-video" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover opacity-40">
+        <source src="assets/video.mp4" type="video/mp4" />
+      </video>
+      <div class="absolute inset-0 bg-gradient-to-b from-black via-black/40 to-black z-10"></div>
+      <div class="relative z-20 px-6 max-w-[1200px] w-full">
+
+        <!-- Header (copy preserved) -->
+        <div class="text-center mb-12">
+          <p class="text-sm font-bold tracking-widest text-blue-400 uppercase mb-4">LET'S BUILD YOUR X</p>
+          <h2 class="text-5xl md:text-7xl font-black text-white mb-4 tracking-tighter drop-shadow-2xl">지금 당장 시작 할 수 있는<br/>3가지.</h2>
+          <p class="text-lg text-white/60">"<b>XNEX</b>를 알고 있다는 것만으로 무료입니다."</p>
+        </div>
+
+        <!-- Primary: 3 진단 카드 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12 text-left">
+
+          <!-- Card 1: AX 진단 (PRIMARY — blue glow) -->
+          <a href="#" class="group relative p-6 rounded-2xl border border-blue-400/50 bg-gradient-to-br from-blue-500/15 to-transparent overflow-hidden hover:border-blue-400 transition-all backdrop-blur-sm" style="box-shadow: 0 0 40px -10px rgba(96,165,250,0.45);">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-lg bg-blue-500/20 border border-blue-400/40 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="brain-circuit" class="w-5 h-5 text-blue-400"></i>
+              </div>
+              <p class="text-sm font-bold tracking-widest text-blue-400 uppercase">AX</p>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-5">무료 AX 진단</h3>
+            <span class="inline-flex items-center gap-1.5 text-base font-semibold text-blue-300 group-hover:gap-3 transition-all">
+              진단 신청
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </span>
+          </a>
+
+          <!-- Card 2: 마케팅 진단 -->
+          <a href="#" class="group relative p-6 rounded-2xl border border-white/15 bg-white/[0.03] overflow-hidden hover:border-white/30 hover:bg-white/[0.06] transition-all backdrop-blur-sm">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-lg bg-white/5 border border-white/15 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="trending-up" class="w-5 h-5 text-white/70"></i>
+              </div>
+              <p class="text-sm font-bold tracking-widest text-white/50 uppercase">Marketing</p>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-5">무료 마케팅 진단</h3>
+            <span class="inline-flex items-center gap-1.5 text-base font-semibold text-white/70 group-hover:text-white group-hover:gap-3 transition-all">
+              진단 신청
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </span>
+          </a>
+
+          <!-- Card 3: AEO 홈페이지 진단 -->
+          <a href="#" class="group relative p-6 rounded-2xl border border-white/15 bg-white/[0.03] overflow-hidden hover:border-white/30 hover:bg-white/[0.06] transition-all backdrop-blur-sm">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-lg bg-white/5 border border-white/15 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="layout-template" class="w-5 h-5 text-white/70"></i>
+              </div>
+              <p class="text-sm font-bold tracking-widest text-white/50 uppercase">AEO</p>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-5">무료 AEO 홈페이지 진단</h3>
+            <span class="inline-flex items-center gap-1.5 text-base font-semibold text-white/70 group-hover:text-white group-hover:gap-3 transition-all">
+              진단 신청
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </span>
+          </a>
+
+        </div>
+
+        <!-- Divider -->
+        <div class="flex items-center gap-4 max-w-md mx-auto mb-8">
+          <div class="flex-1 h-px bg-white/15"></div>
+          <p class="text-[11px] font-bold tracking-[0.3em] text-white/40 uppercase">Or Learn More</p>
+          <div class="flex-1 h-px bg-white/15"></div>
+        </div>
+
+        <!-- Secondary: 자료 다운로드 + 직접 컨택 -->
+        <div class="flex flex-col sm:flex-row gap-3 items-center justify-center">
+          <a href="#" download class="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/20 text-white/80 text-base font-semibold hover:bg-white/10 hover:border-white/40 transition-colors">
+            <i data-lucide="arrow-down-to-line" class="w-4 h-4"></i>
+            회사소개서 다운로드
+          </a>
+          <a href="mailto:contact@xnex.kr" class="inline-flex items-center gap-2 px-6 py-3 rounded-full text-white/60 text-base font-medium hover:text-white transition-colors">
+            <i data-lucide="mail" class="w-4 h-4"></i>
+            contact@xnex.kr
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="w-full border-t border-dashed border-white/20 bg-black" style="font-family: var(--font-sora);">
+    <div class="max-w-[1600px] mx-auto py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <span class="text-white font-black text-lg tracking-tighter">XNEX</span>
+        <span class="text-gray-600 text-xs">(주) 엑스넥스</span>
+        <a href="mailto:contact@xnex.kr" class="text-gray-500 text-xs hover:text-white transition-colors">contact@xnex.kr</a>
+      </div>
+      <div class="flex items-center gap-6 text-xs text-gray-600">
+        <a href="#" class="hover:text-white transition-colors">개인정보처리방침</a>
+        <a href="#" class="hover:text-white transition-colors">이용약관</a>
+        <span>© 2026 XNEX Inc. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ LUCIDE ICONS ============ -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- ============ MAIN SCRIPT ============ -->
+  <script>
+    // ===== Build Orbit Nodes =====
+    (function buildOrbitNodes() {
+      const nodeConfigs = [
+        { title: "CLASSX", sub: "교육", color: "#FFD700" },
+        { title: "X-그로스", sub: "마케팅", color: "#4A90E2" },
+        { title: "X-뷰티", sub: "브랜드", color: "#FF69B4" },
+        { title: "스튜디오X", sub: "AI 영상", color: "#8A2BE2" },
+        { title: "사이트X", sub: "AEO", color: "#7B68EE" },
+        { title: "X-빌드", sub: "AX 컨설팅", color: "#9370DB" },
+        { title: "X-nest", sub: "공간", color: "#FFA500" },
+        { title: "X-허브", sub: "SaaS", color: "#00FA9A" },
+      ];
+      const container = document.getElementById("orbit-nodes");
+      if (!container) return;
+      const angleStep = (2 * Math.PI) / nodeConfigs.length;
+      nodeConfigs.forEach((node, idx) => {
+        const angle = idx * angleStep;
+        const x = 50 + 40 * Math.cos(angle);
+        const y = 50 + 40 * Math.sin(angle);
+        const wrap = document.createElement("div");
+        wrap.className = "absolute";
+        wrap.style.left = x + "%";
+        wrap.style.top = y + "%";
+        wrap.style.transform = "translate(-50%, -50%)";
+        wrap.innerHTML = `
+          <div class="orbit-node-content bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-5 py-3 w-40 flex flex-col justify-center items-center" style="box-shadow: 0 8px 32px 0 rgba(0,0,0,0.2);">
+            <div class="text-lg font-black text-center leading-tight" style="color: ${node.color};">${node.title}</div>
+            <div class="text-sm font-medium text-gray-200 text-center mt-1.5">${node.sub}</div>
+          </div>
+        `;
+        container.appendChild(wrap);
+      });
+    })();
+
+    // ===== Progressive Blur (replaces framer-motion ProgressiveBlur) =====
+    (function buildProgressiveBlur() {
+      const GRADIENT_ANGLES = { top: 0, right: 90, bottom: 180, left: 270 };
+      function build(container, direction, blurLayers, blurIntensity) {
+        const layers = Math.max(blurLayers, 2);
+        const segmentSize = 1 / (blurLayers + 1);
+        const angle = GRADIENT_ANGLES[direction];
+        for (let i = 0; i < layers; i++) {
+          const stops = [i, i + 1, i + 2, i + 3].map((n, j) => {
+            const pos = n * segmentSize * 100;
+            const alpha = (j === 1 || j === 2) ? 1 : 0;
+            return `rgba(255, 255, 255, ${alpha}) ${pos}%`;
+          }).join(", ");
+          const gradient = `linear-gradient(${angle}deg, ${stops})`;
+          const layer = document.createElement("div");
+          layer.className = "pointer-events-none absolute inset-0";
+          layer.style.maskImage = gradient;
+          layer.style.webkitMaskImage = gradient;
+          layer.style.backdropFilter = `blur(${i * blurIntensity}px)`;
+          layer.style.webkitBackdropFilter = `blur(${i * blurIntensity}px)`;
+          container.appendChild(layer);
+        }
+      }
+      const left = document.getElementById("blur-left");
+      const right = document.getElementById("blur-right");
+      if (left) build(left, "left", 8, 2);
+      if (right) build(right, "right", 8, 2);
+    })();
+
+    // ===== Project Showcase Drag Scroll =====
+    (function showcaseDrag() {
+      const el = document.getElementById("showcase-scroll");
+      if (!el) return;
+      let isDown = false, startX = 0, scrollLeft = 0;
+      el.addEventListener("mousedown", (e) => {
+        isDown = true;
+        el.classList.add("scale-[0.99]");
+        el.style.cursor = "grabbing";
+        startX = e.pageX - el.offsetLeft;
+        scrollLeft = el.scrollLeft;
+        el.style.scrollBehavior = "auto";
+        el.style.scrollSnapType = "none";
+      });
+      const release = () => {
+        if (!isDown) return;
+        isDown = false;
+        el.classList.remove("scale-[0.99]");
+        el.style.cursor = "grab";
+        el.style.scrollBehavior = "smooth";
+        el.style.scrollSnapType = "x mandatory";
+      };
+      el.addEventListener("mouseleave", release);
+      el.addEventListener("mouseup", release);
+      el.addEventListener("mousemove", (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - el.offsetLeft;
+        const walk = (x - startX) * 2;
+        el.scrollLeft = scrollLeft - walk;
+      });
+    })();
+
+    // ===== Hero X object — tilt by mouse movement direction =====
+    (function initHeroXTilt() {
+      const el = document.getElementById("hero-x-object");
+      if (!el) return;
+
+      let lastX = null, lastY = null, lastT = 0;
+      let targetRX = 0, targetRY = 0;
+      let rx = 0, ry = 0;
+      const MAX = 14;
+
+      window.addEventListener("mousemove", (e) => {
+        const now = performance.now();
+        if (lastX !== null) {
+          const dt = Math.max(8, now - lastT);
+          const vx = (e.clientX - lastX) / dt;
+          const vy = (e.clientY - lastY) / dt;
+          targetRY = Math.max(-MAX, Math.min(MAX, targetRY + vx * 4));
+          targetRX = Math.max(-MAX, Math.min(MAX, targetRX - vy * 4));
+        }
+        lastX = e.clientX; lastY = e.clientY; lastT = now;
+      }, { passive: true });
+
+      (function loop() {
+        targetRX *= 0.9;
+        targetRY *= 0.9;
+        rx += (targetRX - rx) * 0.18;
+        ry += (targetRY - ry) * 0.18;
+        el.style.transform = `perspective(1000px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+        requestAnimationFrame(loop);
+      })();
+    })();
+
+    // ===== Three.js Shader Animation =====
+    (function initShader() {
+      const container = document.getElementById("shader-container");
+      if (!container) return;
+
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/89/three.min.js";
+      script.onload = () => {
+        if (!window.THREE) return;
+        const THREE = window.THREE;
+        container.innerHTML = "";
+
+        const camera = new THREE.Camera();
+        camera.position.z = 1;
+
+        const scene = new THREE.Scene();
+        const geometry = new THREE.PlaneBufferGeometry(2, 2);
+
+        const uniforms = {
+          time: { type: "f", value: 1.0 },
+          resolution: { type: "v2", value: new THREE.Vector2() },
+        };
+
+        const vertexShader = `
+          void main() {
+            gl_Position = vec4( position, 1.0 );
+          }
+        `;
+
+        const fragmentShader = `
+          #define TWO_PI 6.2831853072
+          #define PI 3.14159265359
+
+          precision highp float;
+          uniform vec2 resolution;
+          uniform float time;
+
+          float random (in float x) {
+            return fract(sin(x)*1e4);
+          }
+          float random (vec2 st) {
+            return fract(sin(dot(st.xy, vec2(12.9898,78.233)))*43758.5453123);
+          }
+
+          varying vec2 vUv;
+
+          void main(void) {
+            vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
+
+            vec2 fMosaicScal = vec2(4.0, 2.0);
+            vec2 vScreenSize = vec2(256,256);
+            uv.x = floor(uv.x * vScreenSize.x / fMosaicScal.x) / (vScreenSize.x / fMosaicScal.x);
+            uv.y = floor(uv.y * vScreenSize.y / fMosaicScal.y) / (vScreenSize.y / fMosaicScal.y);
+
+            float t = time*0.06+random(uv.x)*0.4;
+            float lineWidth = 0.0008;
+
+            vec3 color = vec3(0.0);
+            for(int j = 0; j < 3; j++){
+              for(int i=0; i < 5; i++){
+                color[j] += lineWidth*float(i*i) / abs(fract(t - 0.01*float(j)+float(i)*0.01)*1.0 - length(uv));
+              }
+            }
+
+            gl_FragColor = vec4(color[2],color[1],color[0],1.0);
+          }
+        `;
+
+        const material = new THREE.ShaderMaterial({
+          uniforms,
+          vertexShader,
+          fragmentShader,
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        function onResize() {
+          const rect = container.getBoundingClientRect();
+          renderer.setSize(rect.width, rect.height);
+          uniforms.resolution.value.x = renderer.domElement.width;
+          uniforms.resolution.value.y = renderer.domElement.height;
+        }
+        onResize();
+        window.addEventListener("resize", onResize, false);
+
+        function animate() {
+          requestAnimationFrame(animate);
+          uniforms.time.value += 0.05;
+          renderer.render(scene, camera);
+        }
+        animate();
+      };
+      document.head.appendChild(script);
+    })();
+
+    // ===== 4D Process Tab Switcher =====
+    (function initProcess() {
+      const steps = document.querySelectorAll('.process-step');
+      const bar = document.getElementById('process-bar');
+      const contents = document.querySelectorAll('.process-content');
+      steps.forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+          steps.forEach(s => {
+            s.classList.remove('active-step');
+            s.classList.add('text-gray-500');
+          });
+          btn.classList.add('active-step');
+          btn.classList.remove('text-gray-500');
+          contents.forEach(c => c.classList.add('hidden'));
+          const target = document.getElementById('process-content-' + i);
+          if (target) { target.classList.remove('hidden'); }
+          if (bar) bar.style.width = ((i + 1) * 25) + '%';
+        });
+      });
+    })();
+
+    // ===== Scroll-triggered number counter =====
+    (function initCounters() {
+      const counters = document.querySelectorAll('[data-count]');
+      if (!counters.length) return;
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target;
+          const target = parseInt(el.dataset.count, 10);
+          const suffix = el.dataset.suffix || '';
+          const prefix = el.dataset.prefix || '';
+          let start = 0;
+          const dur = 1200;
+          const step = dur / target;
+          const timer = setInterval(() => {
+            start += Math.ceil(target / (dur / 16));
+            if (start >= target) { start = target; clearInterval(timer); }
+            el.textContent = prefix + start + suffix;
+          }, 16);
+          obs.unobserve(el);
+        });
+      }, { threshold: 0.5 });
+      counters.forEach(el => obs.observe(el));
+    })();
+
+    // ===== Lucide Icons =====
+    if (window.lucide && typeof window.lucide.createIcons === "function") {
+      window.lucide.createIcons();
+    } else {
+      window.addEventListener("load", () => {
+        if (window.lucide && typeof window.lucide.createIcons === "function") {
+          window.lucide.createIcons();
+        }
+      });
+    }
+
+    // ===== Video autoplay fallback =====
+    (function playVideo() {
+      const v = document.getElementById("cta-video");
+      if (v && typeof v.play === "function") {
+        const p = v.play();
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      }
+    })();
+  </script>
+</body>
+</html>

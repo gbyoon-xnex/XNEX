@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>XNEX AEO</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" crossorigin=""/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap"/>
+<style>
+:root{
+  --bg:#04040c;--bg1:#080816;--bg2:#0d0d1e;
+  --red:#e02020;--red2:#ff3535;--red-a:rgba(224,32,32,.15);
+  --grn:#00e87a;--grn-a:rgba(0,232,122,.1);
+  --yel:#ffb800;--yel-a:rgba(255,184,0,.1);
+  --blu:#1e90ff;
+  --t0:#f5f5fa;--t1:rgba(255,255,255,.65);--t2:rgba(255,255,255,.38);
+  --fh:'Oxanium','Arial Black',sans-serif;--fm:'Share Tech Mono','Courier New',monospace;--fs:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t0);font-family:var(--fs);overflow-x:hidden;cursor:none}
+a{color:inherit;text-decoration:none}
+
+/* ── CUSTOM CURSOR ── */
+#cursor{position:fixed;width:10px;height:10px;background:var(--red2);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s,background .2s;mix-blend-mode:difference}
+#cursor-ring{position:fixed;width:40px;height:40px;border:1px solid rgba(255,255,255,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .18s cubic-bezier(.17,.67,.83,.67),width .3s,height .3s,opacity .3s}
+body:hover #cursor{opacity:1}
+
+/* ── ALERT BANNER ── */
+.ab{position:fixed;top:0;left:0;right:0;z-index:200;background:var(--red);color:#fff;text-align:center;padding:8px;font-family:var(--fm);font-size:12px;letter-spacing:.1em}
+.ab strong{font-weight:700}
+
+/* ── NAV ── */
+.nav{position:fixed;top:32px;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:0 40px}
+.nav-logo{font-family:var(--fh);font-size:22px;font-weight:800;letter-spacing:.08em;color:#fff}
+.nav-logo em{font-style:normal;color:var(--red2)}
+.nav-cta{padding:10px 24px;background:#fff;color:#000;border:none;border-radius:30px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fh);letter-spacing:.06em;transition:transform .2s,background .2s}
+.nav-cta:hover{transform:scale(1.05);background:var(--red2);color:#fff}
+
+/* ── SECTIONS ── */
+section{min-height:100vh;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+
+/* ══════════════════════════
+   S1 · HERO — canvas particle bg
+══════════════════════════ */
+#s1{background:var(--bg);flex-direction:column;justify-content:center}
+#heroCanvas{position:absolute;inset:0;z-index:0}
+.hero-content{position:relative;z-index:2;text-align:center;padding:0 24px}
+.hero-eyebrow{font-family:var(--fm);font-size:11px;letter-spacing:.2em;color:var(--red2);text-transform:uppercase;margin-bottom:24px;opacity:0;animation:fadeUp .8s .3s forwards}
+.hero-h1{font-family:var(--fh);font-size:clamp(3rem,8vw,7rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:24px;opacity:0;animation:fadeUp .8s .5s forwards}
+.hero-h1 .line-red{color:var(--red2);display:block}
+.hero-h1 .line-red em{font-style:normal;position:relative}
+.hero-h1 .line-red em::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:3px;background:var(--red2);transform:scaleX(0);animation:lineGrow 1s 1.5s forwards}
+@keyframes lineGrow{to{transform:scaleX(1)}}
+.hero-sub{font-size:clamp(14px,1.8vw,18px);color:var(--t1);line-height:1.7;margin-bottom:40px;opacity:0;animation:fadeUp .8s .7s forwards;max-width:560px;margin-left:auto;margin-right:auto}
+.hero-cta-group{display:flex;gap:14px;justify-content:center;opacity:0;animation:fadeUp .8s .9s forwards}
+.btn-r{padding:14px 32px;background:var(--red);color:#fff;border:none;border-radius:4px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--fh);letter-spacing:.06em;transition:background .2s,transform .15s,box-shadow .2s;box-shadow:0 0 40px rgba(224,32,32,.4)}
+.btn-r:hover{background:var(--red2);transform:translateY(-2px);box-shadow:0 0 60px rgba(255,53,53,.6)}
+.btn-o{padding:14px 32px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:4px;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--fh);letter-spacing:.06em;transition:border-color .2s,background .2s}
+.btn-o:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+.hero-trust{display:flex;gap:20px;justify-content:center;flex-wrap:nowrap;opacity:0;animation:fadeUp .8s 1.2s forwards;margin-top:28px}
+.hero-trust-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);font-family:var(--fm);letter-spacing:.04em;white-space:nowrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:6px 14px}
+.hero-trust-item::before{content:'✓';color:var(--grn);font-weight:700;font-size:11px}
+.scroll-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;animation:fadeUp 1s 2s forwards}
+.scroll-hint span{font-family:var(--fm);font-size:9px;letter-spacing:.18em;color:var(--t2);text-transform:uppercase}
+.scroll-arrow{width:1px;height:40px;background:linear-gradient(to bottom,transparent,var(--red2));animation:scrollPulse 1.5s ease-in-out infinite}
+@keyframes scrollPulse{0%,100%{opacity:.4;transform:scaleY(.7)}50%{opacity:1;transform:scaleY(1)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════
+   S2 · 숫자 충격 — 인용/추천 구조
+══════════════════════════ */
+#s2{background:var(--bg1);flex-direction:column}
+.s2-wrap{width:100%;max-width:1200px;padding:0 40px;position:relative;z-index:2}
+.big-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:60px}
+.big-stat{padding:48px 28px;border:1px solid rgba(255,255,255,.06);text-align:center;position:relative;overflow:hidden;transition:border-color .3s;min-width:0}
+.big-stat::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.02),transparent);opacity:0;transition:opacity .3s}
+.big-stat:hover::before{opacity:1}
+.big-stat:hover{border-color:rgba(255,255,255,.15)}
+.big-stat-n{font-family:var(--fh);font-size:clamp(3.5rem,6vw,5.5rem);font-weight:800;line-height:1;margin-bottom:8px}
+.big-stat-n.red{color:var(--red2)}.big-stat-n.grn{color:var(--grn)}.big-stat-n.yel{color:var(--yel)}
+.big-stat-l{font-family:var(--fm);font-size:11px;letter-spacing:.12em;color:var(--t2);text-transform:uppercase}
+/* 3단계 진화 — visual */
+.evo-visual{display:grid;grid-template-columns:1fr 48px 1fr 48px 1fr;align-items:center;gap:0}
+.evo-v-card{border:1px solid rgba(255,255,255,.08);padding:32px 24px;position:relative;overflow:hidden;transition:all .4s}
+.evo-v-card.stage2{border-color:rgba(255,184,0,.4);background:rgba(255,184,0,.03)}
+.evo-v-card.stage3{border-color:rgba(0,232,122,.4);background:rgba(0,232,122,.03)}
+.evo-v-pct{font-family:var(--fh);font-size:56px;font-weight:800;line-height:1;margin-bottom:12px}
+.stage1 .evo-v-pct{color:rgba(255,255,255,.2)}.stage2 .evo-v-pct{color:var(--yel)}.stage3 .evo-v-pct{color:var(--grn)}
+.evo-v-ico{font-size:28px;margin-bottom:10px}
+.evo-v-name{font-family:var(--fh);font-size:16px;font-weight:700;margin-bottom:8px;letter-spacing:.04em}
+.evo-v-desc{font-size:12px;color:var(--t2);line-height:1.7}
+.evo-v-tag{display:inline-block;margin-top:12px;font-family:var(--fm);font-size:9px;letter-spacing:.12em;font-weight:700;padding:4px 10px;border-radius:3px;text-transform:uppercase}
+.stage1 .evo-v-tag{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2)}
+.stage2 .evo-v-tag{background:rgba(255,184,0,.12);border:1px solid rgba(255,184,0,.3);color:var(--yel)}
+.stage3 .evo-v-tag{background:rgba(0,232,122,.1);border:1px solid rgba(0,232,122,.28);color:var(--grn)}
+.evo-arrow-v{display:flex;align-items:center;justify-content:center;font-size:24px;color:rgba(255,255,255,.2)}
+
+/* ══════════════════════════
+   S3 · AI 시뮬레이션 — FULL SCREEN
+══════════════════════════ */
+#s3{background:var(--bg);padding:0}
+.sim-full{width:100%;height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative}
+.sim-left{display:flex;flex-direction:column;justify-content:center;padding:80px 60px;position:relative;z-index:2}
+.sim-left-title{font-family:var(--fh);font-size:clamp(1.8rem,3.5vw,3rem);font-weight:800;line-height:1.15;margin-bottom:20px}
+.sim-left-title em{font-style:normal;color:var(--red2)}
+.sim-left-sub{font-size:14px;color:var(--t1);line-height:1.8;margin-bottom:32px;max-width:400px}
+.sim-right{position:relative;display:flex;align-items:center;justify-content:center;padding:60px 40px}
+.sim-right::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,232,122,.03),rgba(30,144,255,.03))}
+/* Terminal-style sim */
+.terminal{background:#060610;border:1px solid rgba(255,255,255,.1);border-radius:12px;width:100%;max-width:500px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.7),0 0 60px rgba(0,232,122,.05)}
+.terminal-bar{background:rgba(255,255,255,.04);padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.06)}
+.t-dot{width:10px;height:10px;border-radius:50%}
+.t-dot.r{background:#ff5f57}.t-dot.y{background:#ffbd2e}.t-dot.g{background:#28c840}
+.t-title{margin-left:8px;font-family:var(--fm);font-size:11px;color:var(--t2);flex:1;text-align:center;letter-spacing:.1em}
+.t-live{font-family:var(--fm);font-size:10px;color:var(--grn);display:flex;align-items:center;gap:5px}
+.t-live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 1.2s infinite;display:block}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.terminal-body{padding:20px;display:flex;flex-direction:column;gap:14px;min-height:340px}
+.t-step{opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s}
+.t-step.on{opacity:1;transform:translateY(0)}
+.t-user-msg{background:rgba(30,144,255,.1);border:1px solid rgba(30,144,255,.25);border-radius:8px 8px 2px 8px;padding:10px 14px;font-size:14px;color:rgba(255,255,255,.85);align-self:flex-start}
+.t-log{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:12px 14px;font-family:var(--fm);font-size:11px;display:flex;flex-direction:column;gap:5px}
+.tl{display:flex;align-items:center;gap:8px;color:var(--t2)}
+.tl.ok{color:var(--grn)}.tl.fail{color:var(--red2)}.tl.spin{animation:spinTxt 1s linear infinite}
+@keyframes spinTxt{to{letter-spacing:.18em}}
+.t-result{background:rgba(0,232,122,.06);border:1.5px solid rgba(0,232,122,.25);border-radius:6px 8px 8px 6px;padding:14px 16px;font-size:13px;line-height:1.7}
+.t-res-head{font-family:var(--fm);font-size:10px;color:var(--grn);letter-spacing:.1em;margin-bottom:10px}
+.t-res-row{display:flex;align-items:center;gap:8px;padding:3px 0}
+.t-res-row.hi{color:var(--grn);font-weight:600}
+.t-res-row.dim{color:var(--t2);font-size:12px}
+.t-badge{background:var(--grn);color:#000;font-size:9px;font-family:var(--fm);font-weight:700;padding:2px 7px;border-radius:2px}
+.t-warn{margin-top:10px;font-family:var(--fm);font-size:10px;color:var(--red2)}
+.terminal-footer{padding:10px 16px;border-top:1px solid rgba(255,255,255,.04);display:flex;gap:7px}
+.t-eng{font-family:var(--fm);font-size:10px;color:var(--t2);background:rgba(255,255,255,.03);padding:3px 9px;border-radius:3px}
+
+/* ══════════════════════════
+   S4 · 수식어 인터랙티브
+══════════════════════════ */
+#s4{background:var(--bg1);flex-direction:column;justify-content:center}
+.s4-wrap{width:100%;max-width:1200px;padding:0 40px;position:relative;z-index:2}
+.s4-title{font-family:var(--fh);font-size:clamp(1.6rem,3vw,2.6rem);font-weight:800;line-height:1.2;margin-bottom:48px;text-align:center}
+.s4-title em{font-style:normal;color:var(--red2)}
+/* Modifier map — interactive */
+.modifier-demo{display:grid;grid-template-columns:1fr 80px 1fr;align-items:center;gap:0}
+.mod-q-box{background:rgba(30,144,255,.05);border:1px solid rgba(30,144,255,.25);border-radius:12px;padding:28px;position:relative;overflow:hidden}
+.mod-q-box::before{content:'고객의 질문';position:absolute;top:12px;left:14px;font-family:var(--fm);font-size:9px;letter-spacing:.14em;color:rgba(30,144,255,.7);text-transform:uppercase}
+.mod-q-text{font-size:clamp(14px,1.5vw,18px);font-weight:700;font-style:italic;line-height:1.6;margin-top:20px;margin-bottom:20px;color:var(--t0)}
+.mod-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+/* 힌트 — 칩 바로 아래, 눈에 잘 띄게 강화 */
+.chip-hint{margin-top:16px;display:inline-flex;align-items:center;gap:8px;font-family:var(--fm);font-size:12px;color:#fff;letter-spacing:.08em;background:rgba(30,144,255,.18);border:1px solid rgba(30,144,255,.45);border-radius:20px;padding:7px 16px;box-shadow:0 0 18px rgba(30,144,255,.25);animation:hintGlow 1.8s ease-in-out infinite}
+.chip-hint-dot{width:7px;height:7px;border-radius:50%;background:var(--blu);animation:dotBlink 1s ease-in-out infinite;flex-shrink:0;box-shadow:0 0 8px var(--blu)}
+@keyframes hintGlow{0%,100%{box-shadow:0 0 14px rgba(30,144,255,.25);transform:translateY(0)}50%{box-shadow:0 0 32px rgba(30,144,255,.55);transform:translateY(-2px)}}
+@keyframes dotBlink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+.chip{padding:6px 14px;border-radius:20px;font-size:12px;font-family:var(--fm);font-weight:600;cursor:pointer;transition:transform .2s,box-shadow .2s,filter .2s;user-select:none;position:relative;overflow:hidden}
+.chip::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 20%,rgba(255,255,255,.25) 50%,transparent 80%);transform:translateX(-100%);transition:none}
+.chip:not(.active):hover::after{animation:chipShimmer .5s ease forwards}
+@keyframes chipShimmer{to{transform:translateX(100%)}}
+.chip:hover{transform:translateY(-2px)}
+.chip.c1{background:rgba(30,144,255,.15);border:1px solid rgba(30,144,255,.35);color:#93c5fd}
+.chip.c2{background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.35);color:#d8b4fe}
+.chip.c3{background:rgba(255,184,0,.15);border:1px solid rgba(255,184,0,.35);color:#fcd34d}
+.chip.c4{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);color:#fca5a5}
+.chip.active{transform:scale(1.08);box-shadow:0 4px 20px rgba(255,255,255,.15)}
+.mod-arrow-anim{display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--red2);animation:arrowPulse 1.5s ease-in-out infinite}
+@keyframes arrowPulse{0%,100%{transform:translateX(0);opacity:.6}50%{transform:translateX(6px);opacity:1}}
+.mod-faq-box{background:rgba(0,232,122,.05);border:1px solid rgba(0,232,122,.2);border-radius:12px;padding:28px;position:relative;overflow:hidden;min-height:220px}
+.mod-faq-box::before{content:'AI가 읽을 FAQ';position:absolute;top:12px;left:14px;font-family:var(--fm);font-size:9px;letter-spacing:.14em;color:rgba(0,232,122,.7);text-transform:uppercase}
+.faq-items{display:flex;flex-direction:column;gap:8px;margin-top:20px}
+.faq-it{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:8px 12px;font-size:13px;color:var(--t1);transition:all .3s;opacity:.4;transform:translateX(-8px)}
+.faq-it.on{opacity:1;transform:translateX(0);border-color:rgba(0,232,122,.25);background:rgba(0,232,122,.04)}
+.faq-it::before{content:'Q. ';color:var(--grn);font-family:var(--fm);font-weight:700;font-size:11px}
+
+/* ══════════════════════════
+   S5 · AI 4단계 — 애니메이션 파이프라인
+══════════════════════════ */
+#s5{background:var(--bg)}
+.pipeline-wrap{width:100%;max-width:1200px;padding:0 40px;position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+.pipeline-title{font-family:var(--fh);font-size:clamp(1.6rem,3vw,2.6rem);font-weight:800;margin-bottom:60px;text-align:center}
+.pipeline-title em{font-style:normal;color:var(--red2)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:0;width:100%;position:relative}
+.pipeline::before{content:'';position:absolute;top:78px;left:calc(12.5%);right:calc(12.5%);height:2px;background:linear-gradient(to right,rgba(255,255,255,.1),var(--red2),rgba(255,255,255,.1));z-index:0}
+@keyframes flowLine{0%{background-position:0%}100%{background-position:100%}}
+.pipe-step{display:flex;flex-direction:column;align-items:center;padding:0 16px;position:relative;z-index:1;cursor:default}
+.pipe-icon{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.1);margin-bottom:20px;font-size:32px;position:relative;overflow:hidden;transition:all .4s;background:var(--bg1)}
+.pipe-icon::before{content:'';position:absolute;inset:0;border-radius:50%;opacity:0;transition:opacity .4s}
+.pipe-step.on .pipe-icon{transform:scale(1.1)}
+.pipe-step:nth-child(1).on .pipe-icon{border-color:var(--blu);box-shadow:0 0 40px rgba(30,144,255,.4)}
+.pipe-step:nth-child(1).on .pipe-icon::before{background:radial-gradient(circle,rgba(30,144,255,.2),transparent);opacity:1}
+.pipe-step:nth-child(2).on .pipe-icon{border-color:#ff8c00;box-shadow:0 0 40px rgba(255,140,0,.4)}
+.pipe-step:nth-child(2).on .pipe-icon::before{background:radial-gradient(circle,rgba(255,140,0,.2),transparent);opacity:1}
+.pipe-step:nth-child(3).on .pipe-icon{border-color:#7c3aed;box-shadow:0 0 40px rgba(124,58,237,.4)}
+.pipe-step:nth-child(3).on .pipe-icon::before{background:radial-gradient(circle,rgba(124,58,237,.2),transparent);opacity:1}
+.pipe-step:nth-child(4).on .pipe-icon{border-color:var(--grn);box-shadow:0 0 40px rgba(0,232,122,.4)}
+.pipe-step:nth-child(4).on .pipe-icon::before{background:radial-gradient(circle,rgba(0,232,122,.2),transparent);opacity:1}
+.pipe-num{font-family:var(--fm);font-size:10px;color:var(--t2);letter-spacing:.12em;margin-bottom:8px}
+.pipe-title{font-family:var(--fh);font-size:16px;font-weight:700;text-align:center;margin-bottom:6px;letter-spacing:.04em}
+.pipe-desc{font-size:11px;color:var(--t2);text-align:center;line-height:1.7;max-width:160px}
+.pipe-tag{margin-top:8px;font-family:var(--fm);font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.pipe-step:nth-child(1) .pipe-tag{color:var(--blu)}
+.pipe-step:nth-child(2) .pipe-tag{color:var(--red2)}
+.pipe-step:nth-child(3) .pipe-tag{color:var(--yel)}
+.pipe-step:nth-child(4) .pipe-tag{color:var(--grn)}
+/* 탈락 표시 */
+.reject-overlay{margin-top:40px;width:100%;background:rgba(224,32,32,.05);border:1px solid rgba(224,32,32,.2);border-radius:8px;padding:16px 24px;display:flex;align-items:center;gap:16px;font-family:var(--fm);font-size:12px;color:var(--red2);letter-spacing:.06em}
+.reject-bar{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;position:relative}
+.reject-fill{position:absolute;inset:0;background:linear-gradient(to right,var(--red2),transparent);animation:fillBar 2s ease-out forwards;width:0%}
+@keyframes fillBar{to{width:95%}}
+
+/* ══════════════════════════
+   S6 · TOP 3 인터랙티브
+══════════════════════════ */
+#s6{background:var(--bg1);flex-direction:column}
+.s6-wrap{width:100%;max-width:1000px;padding:0 40px;display:flex;flex-direction:column;align-items:center}
+.s6-title{font-family:var(--fh);font-size:clamp(1.6rem,3vw,2.6rem);font-weight:800;text-align:center;margin-bottom:12px}
+.s6-title em{font-style:normal;color:var(--red2)}
+.s6-source{font-family:var(--fm);font-size:10px;color:var(--t2);letter-spacing:.08em;margin-bottom:48px}
+/* Podium visual */
+.podium-wrap{display:flex;align-items:flex-end;gap:12px;margin-bottom:32px;width:100%;justify-content:center}
+.podium-slot{display:flex;flex-direction:column;align-items:center;transition:all .4s}
+.podium-block{width:120px;display:flex;align-items:center;justify-content:center;border-radius:6px 6px 0 0;position:relative;transition:all .4s}
+.podium-slot:nth-child(1) .podium-block{height:180px;background:linear-gradient(to top,rgba(0,232,122,.15),rgba(0,232,122,.04));border:1.5px solid rgba(0,232,122,.4)}
+.podium-slot:nth-child(2) .podium-block{height:140px;background:linear-gradient(to top,rgba(0,232,122,.1),rgba(0,232,122,.02));border:1px solid rgba(0,232,122,.25)}
+.podium-slot:nth-child(3) .podium-block{height:110px;background:linear-gradient(to top,rgba(0,232,122,.06),transparent);border:1px solid rgba(0,232,122,.15)}
+.podium-slot.invisible .podium-block{height:60px;background:rgba(224,32,32,.06);border:1px solid rgba(224,32,32,.2);width:90px;opacity:.5}
+.podium-rank{font-family:var(--fh);font-size:48px;font-weight:800;color:rgba(255,255,255,.08);position:absolute}
+.podium-slot:nth-child(1) .podium-rank{color:rgba(0,232,122,.3);font-size:64px}
+.podium-label{font-family:var(--fm);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-top:8px;color:var(--t2)}
+.podium-slot:nth-child(1) .podium-label{color:var(--grn)}
+.podium-slot.invisible .podium-label{color:var(--red2)}
+.s6-yellow-box{background:var(--yel-a);border:1px solid rgba(255,184,0,.25);border-radius:10px;padding:20px 28px;font-size:14px;color:var(--t1);line-height:1.8;text-align:center;max-width:700px}
+.s6-yellow-box strong{color:var(--yel)}
+
+/* ══════════════════════════
+   S7 · 레퍼런스 — CARDS
+══════════════════════════ */
+#s7{background:var(--bg);flex-direction:column;justify-content:center}
+.s7-wrap{width:100%;max-width:1300px;padding:40px 40px;display:flex;flex-direction:column}
+.s7-title{font-family:var(--fh);font-size:clamp(1.4rem,2.8vw,2.4rem);font-weight:800;margin-bottom:8px}
+.s7-title em{font-style:normal;color:var(--red2)}
+.s7-sub{font-size:13px;color:var(--t2);font-family:var(--fm);letter-spacing:.06em;margin-bottom:36px}
+.ref-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+.ref-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);padding:28px 24px;position:relative;overflow:hidden;transition:all .3s;cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:8px}
+.ref-card:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.16);transform:translateY(-3px);z-index:2;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.ref-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grn);transform:scaleX(0);transition:transform .3s;transform-origin:left}
+.ref-card:hover::before{transform:scaleX(1)}
+.ref-num{font-family:var(--fm);font-size:9px;letter-spacing:.14em;color:var(--t2);text-transform:uppercase}
+.ref-name{font-family:var(--fh);font-size:17px;font-weight:700;letter-spacing:.03em}
+.ref-cat{font-size:11px;color:var(--t2)}
+.ref-kpi{font-family:var(--fh);font-size:28px;font-weight:800;color:var(--grn);line-height:1;margin-top:4px}
+.ref-domain{font-family:var(--fm);font-size:11px;color:var(--blu);margin-top:auto;padding-top:12px;display:flex;align-items:center;gap:4px}
+.ref-card.capture{background:rgba(224,32,32,.04);border-color:rgba(224,32,32,.2);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center}
+.ref-card.capture:hover{border-color:rgba(224,32,32,.5)}
+.ref-card.capture::before{background:var(--red2)}
+.capture-title{font-family:var(--fh);font-size:15px;font-weight:700;color:var(--red2)}
+.capture-btn{padding:10px 22px;background:var(--red);color:#fff;border-radius:4px;font-size:12px;font-weight:700;font-family:var(--fh);letter-spacing:.06em}
+
+/* ── 가격 이유+쿠폰 통합 레이아웃 ── */
+.reason-coupon-wrap{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:center;width:100%;margin-bottom:36px}
+.price-coupon{flex-shrink:0}
+.coupon-inner{background:rgba(0,0,0,.7);border:2px dashed rgba(255,184,0,.6);border-radius:10px;padding:16px 20px;display:flex;flex-direction:column;justify-content:center;gap:10px;position:relative;overflow:visible;box-sizing:border-box}
+.coupon-inner::before{content:'';position:absolute;left:-13px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--bg1);border:2px dashed rgba(255,184,0,.6)}
+.coupon-inner::after{content:'';position:absolute;right:-13px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--bg1);border:2px dashed rgba(255,184,0,.6)}
+.coupon-label{font-family:var(--fm),monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--yel)}
+.coupon-orig-wrap{position:relative;display:inline-block;padding:5px 10px;border:1.5px solid rgba(255,255,255,.15);border-radius:5px;background:rgba(255,255,255,.04);align-self:flex-start}
+.coupon-orig{font-family:var(--fh),sans-serif;font-size:1.1rem;font-weight:800;color:rgba(255,255,255,.5);line-height:1;display:block;white-space:nowrap}
+.coupon-orig-wrap::before{content:'';position:absolute;left:0;top:0;right:0;bottom:0;background:repeating-linear-gradient(-8deg,transparent 0,transparent 10px,rgba(224,32,32,.15) 10px,rgba(224,32,32,.15) 11px);border-radius:5px;pointer-events:none}
+.coupon-orig-wrap::after{content:'ORIGINAL';position:absolute;top:-8px;left:8px;font-family:var(--fm),monospace;font-size:7px;letter-spacing:.1em;color:rgba(255,255,255,.35);background:var(--bg1);padding:0 5px}
+.coupon-slash{position:absolute;left:-3px;right:-3px;top:50%;height:2px;background:var(--red2);transform:rotate(-3deg);border-radius:2px;pointer-events:none;box-shadow:0 0 8px rgba(224,32,32,.7)}
+.coupon-row2{display:flex;align-items:center;gap:10px}
+.coupon-arrow{font-family:var(--fh),sans-serif;font-size:16px;color:rgba(255,255,255,.35);flex-shrink:0}
+.coupon-new{display:flex;flex-direction:column;margin-left:auto}
+.coupon-new-label{font-family:var(--fm),monospace;font-size:8px;letter-spacing:.1em;color:var(--grn);margin-bottom:3px}
+.coupon-new-price{font-family:var(--fh),sans-serif;font-size:1.45rem;font-weight:800;color:var(--grn);line-height:1;white-space:nowrap}
+.coupon-footer{display:flex;align-items:center;justify-content:flex-end}
+.coupon-badge{background:var(--red);color:#fff;font-family:var(--fh),sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:4px;letter-spacing:.05em;white-space:nowrap}
+/* 플랜 카드 배지 */
+.p-badge{display:inline-flex;align-items:center;padding:5px 14px;border-radius:4px;font-family:var(--fm),monospace;font-size:11px;font-weight:700;letter-spacing:.08em;margin-bottom:10px;white-space:nowrap;width:auto;align-self:flex-start}
+.p-badge.b50{background:var(--yel);color:#000}
+.p-badge.b57{background:var(--red);color:#fff}
+#s8{background:var(--bg1);flex-direction:column}
+.s8-wrap{width:100%;max-width:1100px;padding:0 40px;display:flex;flex-direction:column;align-items:center}
+.s8-reason{background:var(--yel-a);border:1px solid rgba(255,184,0,.3);border-radius:10px;padding:20px 28px}
+.s8-reason-t{font-family:var(--fh);font-size:15px;font-weight:700;color:var(--yel);margin-bottom:10px}
+.s8-reason-body{font-size:13px;color:var(--t1);line-height:1.75}
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;margin-bottom:20px}
+.price-card{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:32px;position:relative;overflow:hidden;transition:border-color .3s;display:flex;flex-direction:column}
+.price-card.rec{border-color:var(--red);border-width:2px;background:rgba(224,32,32,.03)}
+.price-card.rec::after{content:'RECOMMENDED';position:absolute;top:-1px;right:18px;background:var(--red);color:#fff;font-family:var(--fm);font-size:9px;font-weight:700;letter-spacing:.12em;padding:5px 12px;border-radius:0 0 7px 7px}
+.p-plan{font-family:var(--fm);font-size:10px;letter-spacing:.14em;color:var(--t2);text-transform:uppercase;margin-bottom:10px}
+.p-title{font-size:17px;font-weight:700;margin-bottom:14px;line-height:1.4}
+.p-orig{font-size:16px;color:var(--t2);text-decoration:line-through;margin-bottom:3px}
+.p-curr{font-family:var(--fh);font-size:48px;font-weight:800;color:var(--red2);line-height:1;margin-bottom:3px}
+.p-tag{font-family:var(--fm);font-size:11px;color:var(--t2);margin-bottom:18px}
+.p-feats{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:24px;flex:1}
+.p-feats li{font-size:13px;color:var(--t1);padding-left:18px;position:relative}
+.p-feats li::before{content:'✓';position:absolute;left:0;color:var(--grn);font-weight:700}
+.p-cta{width:100%;padding:14px;border:none;border-radius:6px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--fh);letter-spacing:.05em;transition:all .2s;margin-top:auto}
+.p-cta.ol{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.28)}
+.p-cta.ol:hover{background:rgba(255,255,255,.07)}
+.p-cta.fi{background:var(--red);color:#fff;box-shadow:0 4px 24px rgba(224,32,32,.35)}
+.p-cta.fi:hover{background:var(--red2);transform:translateY(-2px);box-shadow:0 8px 40px rgba(255,53,53,.5)}
+.price-esc{width:100%;background:#000;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:16px 24px;text-align:center;font-family:var(--fm);font-size:12px;color:var(--yel);letter-spacing:.06em}
+.price-esc strong{color:#fff}
+
+/* ══════════════════════════
+   S9 · FORM
+══════════════════════════ */
+#s9{background:var(--bg);flex-direction:column}
+.s9-wrap{width:100%;max-width:680px;padding:0 24px;position:relative;z-index:2}
+#formCanvas{position:absolute;inset:0;z-index:0;opacity:.4}
+.form-badge{display:flex;align-items:center;gap:8px;justify-content:center;font-family:var(--fm);font-size:11px;color:var(--red2);letter-spacing:.1em;margin-bottom:16px}
+.form-badge-dot{width:8px;height:8px;border-radius:50%;background:var(--red2);animation:blink 1.2s infinite}
+.form-h{font-family:var(--fh);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;text-align:center;margin-bottom:8px;line-height:1.15}
+.form-sub{text-align:center;font-size:13px;color:var(--t1);margin-bottom:36px;line-height:1.7}
+.form-card{background:rgba(255,255,255,.02);backdrop-filter:blur(24px);border:1px solid rgba(224,32,32,.18);border-radius:14px;padding:36px;position:relative;overflow:hidden}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red2),transparent)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-field{display:flex;flex-direction:column;gap:6px}
+.form-lbl{font-family:var(--fm);font-size:9px;letter-spacing:.15em;color:var(--t2);text-transform:uppercase}
+.form-lbl span{color:var(--red2)}
+.form-inp,.form-sel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:11px 14px;font-size:14px;font-family:var(--fs);color:var(--t0);transition:border-color .2s,box-shadow .2s;outline:none;width:100%}
+.form-inp::placeholder{color:rgba(255,255,255,.2)}
+.form-inp:focus,.form-sel:focus{border-color:rgba(224,32,32,.4);box-shadow:0 0 0 3px rgba(224,32,32,.08)}
+.form-sel{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='rgba(255,255,255,0.3)' d='M0 0l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.form-sel option{background:#0d0d1e;color:#fff}
+.form-check{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--t1);margin:14px 0}
+.form-check input{accent-color:var(--red);width:14px;height:14px}
+.form-submit{width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;padding:16px;font-size:18px;font-weight:700;cursor:pointer;font-family:var(--fh);letter-spacing:.06em;transition:all .2s;box-shadow:0 4px 28px rgba(224,32,32,.35);position:relative;overflow:hidden;min-height:56px}
+.form-submit::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);opacity:0;transition:opacity .3s}
+.form-submit:hover{background:var(--red2);transform:translateY(-2px);box-shadow:0 8px 44px rgba(255,53,53,.5)}
+.form-submit:hover::before{opacity:1}
+.form-safe{text-align:center;margin-top:12px;font-size:10px;font-family:var(--fm);color:var(--t2);letter-spacing:.08em}
+
+/* ══════════════════════════
+   MODAL
+══════════════════════════ */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-ov.on{opacity:1;pointer-events:all}
+.modal-box{background:#0a0a18;border:2px solid var(--grn);border-radius:14px;padding:40px;max-width:420px;width:90%;text-align:center;transform:scale(.9);transition:transform .3s;box-shadow:0 0 80px rgba(0,232,122,.15)}
+.modal-ov.on .modal-box{transform:scale(1)}
+.modal-ico{width:64px;height:64px;border-radius:50%;background:rgba(0,232,122,.1);border:2px solid var(--grn);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 18px;box-shadow:0 0 40px rgba(0,232,122,.2)}
+.modal-t{font-family:var(--fh);font-size:20px;font-weight:700;margin-bottom:10px}
+.modal-b{font-size:13px;color:var(--t1);line-height:1.75;margin-bottom:14px}
+.modal-info{background:rgba(30,144,255,.08);border:1px solid rgba(30,144,255,.25);border-radius:7px;padding:11px 15px;font-size:13px;color:var(--t0);margin-bottom:22px}
+.modal-cls{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:11px 32px;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;font-family:var(--fh);letter-spacing:.05em}
+.modal-cls:hover{background:rgba(255,255,255,.15)}
+
+/* ══════════════════════════
+   FAQ 빠른 섹션 (축약)
+══════════════════════════ */
+#sfaq{background:var(--bg1)}
+.faq-wrap{width:100%;max-width:800px;padding:80px 40px;display:flex;flex-direction:column}
+.faq-title{font-family:var(--fh);font-size:clamp(1.4rem,2.5vw,2rem);font-weight:800;margin-bottom:36px}
+.fq{border-bottom:1px solid rgba(255,255,255,.07)}
+.fq-q{display:flex;justify-content:space-between;align-items:center;padding:17px 0;cursor:pointer;font-size:14px;font-weight:600;gap:14px;transition:color .2s}
+.fq-q:hover{color:var(--red2)}
+.fq-q::after{content:'+';font-size:22px;color:var(--t2);flex-shrink:0;transition:transform .3s,color .3s}
+.fq.open .fq-q::after{transform:rotate(45deg);color:var(--red2)}
+.fq.open .fq-q{color:var(--t0)}
+.fq-a{max-height:0;overflow:hidden;transition:max-height .4s ease;font-size:13px;color:var(--t1);line-height:1.85}
+.fq.open .fq-a{max-height:300px;padding-bottom:16px}
+
+/* ══════════════════════════
+   FOOTER
+══════════════════════════ */
+.footer{background:#000;border-top:1px solid rgba(255,255,255,.06);padding:40px;display:flex;flex-direction:column;gap:14px}
+.footer-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-logo{font-family:var(--fh);font-size:18px;font-weight:800}
+.footer-logo em{font-style:normal;color:var(--red2)}
+.footer-links{display:flex;gap:18px;flex-wrap:wrap}
+.footer-link{font-size:12px;color:var(--t2);cursor:pointer;font-family:var(--fm);transition:color .2s}
+.footer-link:hover{color:#fff}
+.footer-biz{font-size:11px;color:var(--t2);font-family:var(--fm);letter-spacing:.04em;line-height:1.8}
+.footer-copy{font-size:11px;color:var(--t2);font-family:var(--fm)}
+
+/* ══════════════════════════
+   STICKY BAR
+══════════════════════════ */
+.sbar{position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,.95);backdrop-filter:blur(20px);border-top:1px solid rgba(224,32,32,.3);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;z-index:90;transform:translateY(100%);transition:transform .4s cubic-bezier(.25,.46,.45,.94)}
+.sbar.on{transform:translateY(0)}
+.sbar-l{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--t1)}
+.sbar-dot{width:8px;height:8px;border-radius:50%;background:var(--red2);animation:blink 1.2s infinite}
+.sbar-l strong{color:#fff;font-family:var(--fh)}
+.sbar-btn{padding:10px 24px;background:var(--red);color:#fff;border:none;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--fh);letter-spacing:.05em;transition:background .2s,transform .15s;box-shadow:0 2px 14px rgba(224,32,32,.35)}
+.sbar-btn:hover{background:var(--red2);transform:translateY(-1px)}
+
+/* ══════════════════════════
+   RESPONSIVE
+══════════════════════════ */
+@media(max-width:900px){
+  .sim-full{grid-template-columns:1fr;height:auto;padding:80px 0 40px}
+  .sim-left{padding:40px 28px}
+  .sim-right{padding:20px 28px}
+  .evo-visual{grid-template-columns:1fr;gap:4px}
+  .evo-arrow-v{transform:rotate(90deg);font-size:18px}
+  .modifier-demo{grid-template-columns:1fr;gap:4px}
+  .mod-arrow-anim{transform:rotate(90deg)}
+  .pipeline{grid-template-columns:1fr 1fr}
+  .pipe-step:nth-child(2)::after,.pipe-step:nth-child(4)::after{display:none}
+  .pipeline::before{display:none}
+  .price-grid{grid-template-columns:1fr}
+  .ref-grid{grid-template-columns:1fr 1fr}
+  .big-stat-grid{grid-template-columns:1fr}
+  .big-stat-n{font-size:clamp(2.5rem,8vw,4rem)}
+  .reason-coupon-wrap{grid-template-columns:1fr}
+  .price-coupon{width:100%}
+}
+@media(max-width:640px){
+  .nav-links-d{display:none}
+  .ref-grid{grid-template-columns:1fr}
+  .podium-wrap{transform:scale(.8);transform-origin:center bottom}
+  .form-row{grid-template-columns:1fr}
+  .hero-trust{flex-direction:column;gap:12px;width:100%}
+  #cursor,#cursor-ring{display:none}
+  body{cursor:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ALERT -->
+<div class="ab">
+  <strong>⚡ 5월 한정 잔여 4자리</strong> &nbsp;·&nbsp; 6월부터 매월 50만원씩 인상
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">X<em>NEX</em></div>
+</nav>
+
+<!-- ████████████████████████████████
+     S1 · HERO
+████████████████████████████████ -->
+<section id="s1">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-eyebrow">한국 홈페이지의 95%는 AI가 인용조차 못 합니다</div>
+    <h1 class="hero-h1">
+      AI에게<br>
+      우리 브랜드가<br>
+      <span class="line-red"><em>인용되게</em> 만듭니다.</span>
+    </h1>
+    <p class="hero-sub">
+      ChatGPT·Gemini·Perplexity는 한 번에 3~5개만 답합니다.<br>
+      그 안에 없으면, 당신의 브랜드는 <strong>존재하지 않는 것</strong>입니다.
+    </p>
+    <div class="hero-cta-group">
+      <button class="btn-r" onclick="scrollToForm()">지금 상담 신청 →</button>
+      <button class="btn-o" onclick="scrollToForm()">레퍼런스 자료 받기</button>
+    </div>
+    <div class="hero-trust">
+      <div class="hero-trust-item">6개 업종 AI 답변 진입 완료</div>
+      <div class="hero-trust-item">4개 AI 채널 동시 최적화</div>
+      <div class="hero-trust-item">신청 즉시 자료 자동 발송</div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ████████████████████████████████
+     S2 · 인용→추천 3단계
+████████████████████████████████ -->
+<section id="s2">
+  <div class="s2-wrap">
+    <div style="text-align:center;margin-bottom:36px">
+      <h2 style="font-family:var(--fh);font-size:clamp(1.4rem,2.8vw,2.4rem);font-weight:800;line-height:1.2;margin-bottom:6px">인용도 못 받으면 추천도 없습니다.</h2>
+      <div style="font-family:var(--fh);font-size:clamp(1.2rem,2vw,1.8rem);font-weight:700;color:var(--red2)">엑스넥스가 해드리는 일은 '인용'입니다.</div>
+      <div style="font-size:13px;color:var(--t2);margin-top:8px">인용이 누적되면 추천으로 자연스럽게 진화합니다.</div>
+    </div>
+    <div class="big-stat-grid">
+      <div class="big-stat">
+        <div class="big-stat-n red" id="cnt1">95%</div>
+        <div class="big-stat-l">한국 홈페이지 중 AI가 인용 못 하는 비율 (자체 추정)</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-n yel" id="cnt2">3~5개</div>
+        <div class="big-stat-l">AI가 한 번에 답하는 브랜드 수</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-n grn" id="cnt3">0.1%</div>
+        <div class="big-stat-l">실제로 AI에게 추천받는 회사의 비율</div>
+      </div>
+    </div>
+    <div class="evo-visual">
+      <div class="evo-v-card stage1">
+        <div class="evo-v-pct">95%</div>
+        <div class="evo-v-ico">❌</div>
+        <div class="evo-v-name">무시 IGNORED</div>
+        <div class="evo-v-desc">AI가 사이트 자체를 읽지 못함<br>이미지·JS·Schema 부재</div>
+        <span class="evo-v-tag">한국 홈페이지 대다수</span>
+      </div>
+      <div class="evo-arrow-v">→</div>
+      <div class="evo-v-card stage2">
+        <div class="evo-v-pct">5%</div>
+        <div class="evo-v-ico">△</div>
+        <div class="evo-v-name">인용 CITATION</div>
+        <div class="evo-v-desc">AI가 정보를 출처로 가져감<br>신뢰 데이터로 누적 시작</div>
+        <span class="evo-v-tag">★ 엑스넥스 작업 영역</span>
+      </div>
+      <div class="evo-arrow-v">→</div>
+      <div class="evo-v-card stage3">
+        <div class="evo-v-pct">0.1%</div>
+        <div class="evo-v-ico">✓</div>
+        <div class="evo-v-name">추천 RECOMMENDATION</div>
+        <div class="evo-v-desc">AI가 직접 회사명·URL 언급<br>클릭률 +340% 사례</div>
+        <span class="evo-v-tag">인용이 누적된 결과</span>
+      </div>
+    </div>
+    <!-- 하단 강조 박스 -->
+    <div style="margin-top:24px;background:#000;border:1px solid rgba(255,255,255,.1);border-left:3px solid var(--red2);border-radius:6px;padding:18px 24px;font-size:13px;color:var(--t1);line-height:1.8">
+      엑스넥스가 책임지는 단계는 <strong style="color:var(--red2)">02 '인용'</strong>입니다. 한국의 95% 기업이 못 들어가는 <strong style="color:#fff">'AI가 읽는 회사'</strong> 그룹에 진입시켜 드립니다. 인용 데이터가 쌓이면 03 '추천' 단계로 자연 진화합니다. <em style="font-style:normal;color:var(--t2)">(추천은 결과지, 시작점이 아닙니다)</em>
+    </div>
+    <!-- 하단 강조 박스 -->
+    <div style="margin-top:28px;width:100%;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:20px 28px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;text-align:center">
+      <div>
+        <div style="font-family:var(--fm);font-size:10px;letter-spacing:.12em;color:var(--red2);text-transform:uppercase;margin-bottom:6px">책임 범위</div>
+        <div style="font-size:13px;color:var(--t1);line-height:1.7">엑스넥스가 책임지는 단계는<br><strong style="color:#fff">02 '인용'</strong>입니다.</div>
+      </div>
+      <div>
+        <div style="font-family:var(--fm);font-size:10px;letter-spacing:.12em;color:var(--yel);text-transform:uppercase;margin-bottom:6px">진입 목표</div>
+        <div style="font-size:13px;color:var(--t1);line-height:1.7">한국 95% 기업이 못 들어가는<br><strong style="color:#fff">'AI가 읽는 회사'</strong> 그룹 진입</div>
+      </div>
+      <div>
+        <div style="font-family:var(--fm);font-size:10px;letter-spacing:.12em;color:var(--grn);text-transform:uppercase;margin-bottom:6px">자연 진화</div>
+        <div style="font-size:13px;color:var(--t1);line-height:1.7">인용 데이터 누적 →<br><strong style="color:#fff">03 '추천' 단계</strong>로 자연 진화</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ████████████████████████████████
+     S3 · AI 시뮬레이션 (FULL)
+████████████████████████████████ -->
+<section id="s3">
+  <div class="sim-full">
+    <div class="sim-left">
+      <div class="sim-left-title">
+        AI는 우리를<br>
+        이렇게 <em>읽고 답합니다.</em>
+      </div>
+      <div class="sim-left-sub">
+        실시간으로 수만 개의 사이트를 스캔하고,<br>
+        신뢰도를 평가해 Top 3만 답변에 넣습니다.<br>
+        <strong>지금 당신의 사이트는 읽히고 있습니까?</strong>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <span style="background:rgba(30,144,255,.12);border:1px solid rgba(30,144,255,.3);border-radius:4px;padding:5px 12px;font-family:var(--fm);font-size:11px;color:#93c5fd">⚡ ChatGPT</span>
+        <span style="background:rgba(0,232,122,.08);border:1px solid rgba(0,232,122,.25);border-radius:4px;padding:5px 12px;font-family:var(--fm);font-size:11px;color:var(--grn)">◆ Gemini</span>
+        <span style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);border-radius:4px;padding:5px 12px;font-family:var(--fm);font-size:11px;color:#d8b4fe">◎ Perplexity</span>
+        <span style="background:rgba(255,184,0,.08);border:1px solid rgba(255,184,0,.25);border-radius:4px;padding:5px 12px;font-family:var(--fm);font-size:11px;color:var(--yel)">● Claude</span>
+      </div>
+    </div>
+    <div class="sim-right">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="t-dot r"></div><div class="t-dot y"></div><div class="t-dot g"></div>
+          <div class="t-title">Gemini Live Simulation</div>
+          <div class="t-live">LIVE</div>
+        </div>
+        <div class="terminal-body">
+          <div class="t-step" id="ts1">
+            <div class="t-user-msg">강남 리프팅 추천해줘</div>
+          </div>
+          <div class="t-step" id="ts2">
+            <div class="t-log">
+              <div class="tl spin">↻ 검색 중...</div>
+              <div class="tl fail">✗ 한국 홈페이지 95% 인용 불가</div>
+              <div class="tl ok">✓ XNEX 작업 사이트 인용 가능</div>
+              <div class="tl ok">✓ Top 3 후보 진입</div>
+            </div>
+          </div>
+          <div class="t-step" id="ts3">
+            <div class="t-result">
+              <div class="t-res-head">💡 강남 리프팅 TOP 3</div>
+              <div class="t-res-row hi"><span class="t-badge">★ XNEX</span> 1. 올리프팅 클리닉 — 울세라 전문, 강남 역삼</div>
+              <div class="t-res-row dim">2. 경쟁 병원 B</div>
+              <div class="t-res-row dim">3. 경쟁 병원 C</div>
+              <div class="t-warn">↗ Top 3 못 들면 답변에 안 나타남</div>
+            </div>
+          </div>
+        </div>
+        <div class="terminal-footer">
+          <span class="t-eng">ChatGPT</span>
+          <span class="t-eng">Gemini</span>
+          <span class="t-eng">Perplexity</span>
+          <span class="t-eng">Claude</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ████████████████████████████████
+     S4 · 수식어 인터랙티브
+████████████████████████████████ -->
+<section id="s4">
+  <div class="s4-wrap">
+    <h2 class="s4-title">AI는 '브랜드명'이 아닌 <em>'맥락'</em>에 답합니다.</h2>
+    <div class="modifier-demo">
+      <div class="mod-q-box">
+        <div class="mod-q-text" id="modQuery">"강남에서 잘하는 울세라 리프팅 병원 추천해줘"</div>
+        <div class="mod-chips">
+          <span class="chip c1 active" data-q="강남에서 잘하는 울세라 리프팅 병원 추천해줘" data-faqs="0,1,2,3" onclick="selectChip(this)">[지역] 강남</span>
+          <span class="chip c2" data-q="강남에서 잘하는 울세라 리프팅 병원 추천해줘" data-faqs="1,3,4,5" onclick="selectChip(this)">[품질] 잘하는</span>
+          <span class="chip c3" data-q="강남에서 잘하는 울세라 리프팅 병원 추천해줘" data-faqs="0,2,4,6" onclick="selectChip(this)">[시술] 울세라 리프팅</span>
+          <span class="chip c4" data-q="강남에서 잘하는 울세라 리프팅 병원 추천해줘" data-faqs="1,3,5,6" onclick="selectChip(this)">[의도] 추천</span>
+        </div>
+        <div class="chip-hint"><span class="chip-hint-dot"></span>수식어를 클릭해보세요 →</div>
+      </div>
+      <div class="mod-arrow-anim">→</div>
+      <div class="mod-faq-box">
+        <div class="faq-items" id="faqItems">
+          <div class="faq-it" data-i="0">강남에서 울세라 잘하는 병원은?</div>
+          <div class="faq-it" data-i="1">울세라 가격은 얼마부터인가요?</div>
+          <div class="faq-it" data-i="2">강남 역삼동 리프팅 전문 병원은?</div>
+          <div class="faq-it" data-i="3">울세라 받기 좋은 시기는?</div>
+          <div class="faq-it" data-i="4">울세라 리프팅 후기 좋은 곳은?</div>
+          <div class="faq-it" data-i="5">리프팅 시술 비교 — 울세라 vs 써마지?</div>
+          <div class="faq-it" data-i="6">울세라 효과 얼마나 지속되나요?</div>
+        </div>
+      </div>
+    </div>
+    <!-- 노란 강조 박스 -->
+    <div style="margin-top:24px;width:100%;background:var(--yel-a);border:1px solid rgba(255,184,0,.3);border-radius:8px;padding:16px 24px;font-size:13px;color:var(--t1);line-height:1.8;text-align:center">
+      → AI가 위 FAQ를 인용해서 답변을 만들 때 → <strong style="color:#fff">우리 브랜드 정보가 답변 안에 자연스럽게 들어가게 됩니다.</strong><br>
+      이 '수식어 매핑 작업'이 <strong style="color:var(--yel)">AEO의 본질</strong>입니다.
+    </div>
+    <!-- 하단 검정 박스 -->
+    <div style="margin-top:10px;width:100%;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:16px 24px;font-size:13px;color:var(--t1);line-height:1.8;text-align:center">
+      <strong style="color:#fff;font-family:var(--fh);font-size:14px">엑스넥스가 하는 일</strong><br>
+      수식어 조합을 분석하고, 그 조합마다 AI가 인용할 FAQ를 사이트에 미리 깔아둡니다.<br>
+      이 FAQ들이 AI에게 <strong style="color:var(--grn)">'우리 브랜드가 답이다'</strong>라고 알려주는 신호입니다.
+    </div>
+  </div>
+</section>
+
+<!-- ████████████████████████████████
+     S5 · 4단계 파이프라인
+████████████████████████████████ -->
+<section id="s5">
+  <div class="pipeline-wrap">
+    <h2 class="pipeline-title">AI가 <em>걸러내는</em> 방식</h2>
+    <div class="pipeline" id="pipelineEl">
+      <div class="pipe-step" data-pi="0">
+        <div class="pipe-num">STEP 01</div>
+        <div class="pipe-icon" style="--step-color:var(--blu)">🙋</div>
+        <div class="pipe-title">고객 질문</div>
+        <div class="pipe-desc">매일 1억 건+<br>AI에게 질문 발생<br><span style="color:rgba(30,144,255,.7);font-size:10px">ChatGPT·Gemini·Perplexity</span></div>
+        <div class="pipe-tag">USER INPUT</div>
+      </div>
+      <div class="pipe-step" data-pi="1">
+        <div class="pipe-num">STEP 02</div>
+        <div class="pipe-icon" style="--step-color:#ff8c00">🔍</div>
+        <div class="pipe-title">AI 크롤링</div>
+        <div class="pipe-desc">수만 개 사이트<br>1초 스캔<br><span style="color:var(--red2);font-size:10px">한국 95% 탈락</span></div>
+        <div class="pipe-tag" style="color:#ff8c00">CRAWL</div>
+      </div>
+      <div class="pipe-step" data-pi="2">
+        <div class="pipe-num">STEP 03</div>
+        <div class="pipe-icon" style="--step-color:#7c3aed">⚖️</div>
+        <div class="pipe-title">신뢰도 평가</div>
+        <div class="pipe-desc">4개 AI 각자 평가<br>공통: E-E-A-T<br><span style="color:rgba(124,58,237,.8);font-size:10px">전문성·권위·신뢰</span></div>
+        <div class="pipe-tag" style="color:#a78bfa">E-E-A-T</div>
+      </div>
+      <div class="pipe-step" data-pi="3">
+        <div class="pipe-num">STEP 04</div>
+        <div class="pipe-icon" style="--step-color:var(--grn)">🏆</div>
+        <div class="pipe-title">AI 답변</div>
+        <div class="pipe-desc">TOP 3만 노출<br><span style="color:var(--grn);font-size:10px">4위 이하 invisible</span></div>
+        <div class="pipe-tag">TOP 3</div>
+      </div>
+    </div>
+    <!-- AEO 작업 본질 강조 박스 -->
+    <div style="margin-top:28px;width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:18px 28px;text-align:center">
+      <div style="font-family:var(--fm);font-size:10px;letter-spacing:.14em;color:var(--t2);text-transform:uppercase;margin-bottom:8px">AEO 작업의 본질</div>
+      <div style="font-size:14px;color:var(--t1);line-height:1.8">
+        <span style="color:#93c5fd">Step 02에서 '읽히게'</span> 만들고 &nbsp;·&nbsp;
+        <span style="color:#a78bfa">Step 03에서 '신뢰받게'</span> 만들고 &nbsp;·&nbsp;
+        <span style="color:var(--grn)">Step 04에서 'Top 3 안에 들어가게'</span> 만드는 작업
+      </div>
+    </div>
+    <div class="reject-overlay" id="rejectBar">
+      <span>⚠ 한국 홈페이지 STEP 02 탈락 비율</span>
+      <div class="reject-bar"><div class="reject-fill" id="rejectFill"></div></div>
+      <span style="color:var(--red2);font-weight:700">95%</span>
+    </div>
+  </div>
+</section>
+
+<!-- ████████████████████████████████
+     S6 · TOP 3 포디움
+████████████████████████████████ -->
+<section id="s6">
+  <div class="s6-wrap">
+    <h2 class="s6-title">AI 답변에는 <em>3개의 자리</em>만 있습니다.</h2>
+    <div class="s6-source">* 출처: Trustmary, Metricus, Search Engine Land 2026</div>
+    <div class="podium-wrap">
+      <div class="podium-slot">
+        <div class="podium-block"><div class="podium-rank">1</div></div>
+        <div class="podium-label">1순위 노출</div>
+      </div>
+      <div class="podium-slot">
+        <div class="podium-block"><div class="podium-rank">2</div></div>
+        <div class="podium-label">2순위 노출</div>
+      </div>
+      <div class="podium-slot">
+        <div class="podium-block"><div class="podium-rank">3</div></div>
+        <div class="podium-label">3순위 노출</div>
+      </div>
+      <div class="podium-slot invisible" style="margin-left:24px">
+        <div class="podium-block" style="flex-direction:column;gap:4px">
+          <div style="font-size:18px">👻</div>
+        </div>
+        <div class="podium-label">4위↓ invisible</div>
+      </div>
+    </div>
+    <div class="s6-yellow-box">
+      AI는 <strong>처음 학습한 회사를 더 신뢰</strong>합니다. 지금 Top 3에 진입한 회사는 6개월 뒤에도 Top 3.<br>
+      <strong>후발주자는 5배의 콘텐츠와 시간이 필요합니다.</strong>
+    </div>
+  </div>
+</section>
+
+<!-- ████████████████████████████████
+     S7 · 레퍼런스
+████████████████████████████████ -->
+<section id="s7">
+  <div class="s7-wrap">
+    <h2 class="s7-title">이미 <em>7개 업종</em>에서 AI 답변에 들어갑니다.</h2>
+    <div class="s7-sub">인용에서 시작해 추천 단계까지 도달한 실제 사례 · (클릭 → 새 탭에서 사이트 열림)</div>
+    <div class="ref-grid">
+      <a href="https://metastarglobal.io" target="_blank" rel="noopener" class="ref-card">
+        <div class="ref-num">01 · 부동산/등기</div>
+        <div class="ref-name">메타스타</div>
+        <div class="ref-cat">metastarglobal.io</div>
+        <div class="ref-kpi">1위</div>
+        <div class="ref-domain">문의 급증 ↗ <span style="font-size:9px;color:var(--t2);margin-left:4px">새 탭 열림</span></div>
+      </a>
+      <a href="https://alllitingclinic.co.kr" target="_blank" rel="noopener" class="ref-card">
+        <div class="ref-num">02 · 병원/의원</div>
+        <div class="ref-name">올리프팅 클리닉</div>
+        <div class="ref-cat">alllitingclinic.co.kr</div>
+        <div class="ref-kpi">1위 / +340%</div>
+        <div class="ref-domain">클릭률 ↗ <span style="font-size:9px;color:var(--t2);margin-left:4px">새 탭 열림</span></div>
+      </a>
+      <a href="https://gilbutacademy.com" target="_blank" rel="noopener" class="ref-card">
+        <div class="ref-num">03 · 학원/교육</div>
+        <div class="ref-name">길벗아카데미</div>
+        <div class="ref-cat">gilbutacademy.com</div>
+        <div class="ref-kpi">1위 / +210%</div>
+        <div class="ref-domain">문의 ↗ <span style="font-size:9px;color:var(--t2);margin-left:4px">새 탭 열림</span></div>
+      </a>
+      <a href="https://okkane.co.kr" target="_blank" rel="noopener" class="ref-card">
+        <div class="ref-num">04 · 쇼핑몰/이커머스</div>
+        <div class="ref-name">OKKANE</div>
+        <div class="ref-cat">okkane.co.kr</div>
+        <div class="ref-kpi">상위 / +185%</div>
+        <div class="ref-domain">매출 ↗ <span style="font-size:9px;color:var(--t2);margin-left:4px">새 탭 열림</span></div>
+      </a>
+      <a href="https://qplace.kr" target="_blank" rel="noopener" class="ref-card">
+        <div class="ref-num">05 · 인테리어/시공</div>
+        <div class="ref-name">큐플레이스</div>
+        <div class="ref-cat">qplace.kr</div>
+        <div class="ref-kpi">TOP / +267%</div>
+        <div class="ref-domain">상담 ↗ <span style="font-size:9px;color:var(--t2);margin-left:4px">새 탭 열림</span></div>
+      </a>
+      <a href="https://bayhill.co.kr" target="_blank" rel="noopener" class="ref-card">
+        <div class="ref-num">06 · 여행/숙박</div>
+        <div class="ref-name">베이힐 풀앤빌라</div>
+        <div class="ref-cat">bayhill.co.kr</div>
+        <div class="ref-kpi">2위 / +156%</div>
+        <div class="ref-domain">예약 ↗ <span style="font-size:9px;color:var(--t2);margin-left:4px">새 탭 열림</span></div>
+      </a>
+      <a href="#" target="_blank" rel="noopener" class="ref-card" style="border-color:rgba(30,144,255,.25);position:relative">
+        <div style="position:absolute;top:12px;right:12px;background:rgba(30,144,255,.15);border:1px solid rgba(30,144,255,.3);border-radius:3px;font-family:var(--fm);font-size:8px;color:var(--blu);padding:2px 7px;letter-spacing:.1em">진행중</div>
+        <div class="ref-num">07 · 환경/에너지</div>
+        <div class="ref-name">K에코텍</div>
+        <div class="ref-cat">k-ecotech.co.kr</div>
+        <div class="ref-kpi" style="color:var(--blu)">작업중</div>
+        <div class="ref-domain" style="color:var(--blu)">AI 진입 준비 ↗ <span style="font-size:9px;color:var(--t2);margin-left:4px">새 탭 열림</span></div>
+      </a>
+      <div class="ref-card capture" onclick="scrollToForm()" style="grid-column:span 1">
+        <div style="font-size:28px">📄</div>
+        <div class="capture-title">상세 레퍼런스 받기</div>
+        <div style="font-size:12px;color:var(--t2)">7개 업종 케이스스터디 PDF</div>
+        <div class="capture-btn">이메일로 받기 →</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ████████████████████████████████
+     S8 · 가격
+████████████████████████████████ -->
+<section id="s8">
+  <div class="s8-wrap">
+    <div style="text-align:center;margin-bottom:36px">
+      <h2 style="font-family:var(--fh);font-size:clamp(1.6rem,3vw,2.6rem);font-weight:800;margin-bottom:8px">
+        5월에 신청해야 하는 <span style="color:var(--red2)">명확한 이유</span>
+      </h2>
+    </div>
+    <div class="reason-coupon-wrap">
+      <!-- 좌: 쿠폰 -->
+      <div class="price-coupon">
+        <div class="coupon-inner">
+          <div class="coupon-label">정가 (PLAN 02 기준)</div>
+          <div class="coupon-orig-wrap">
+            <span class="coupon-orig">7,000,000원</span>
+            <div class="coupon-slash"></div>
+          </div>
+          <div class="coupon-row2">
+            <div class="coupon-arrow">→</div>
+            <div class="coupon-new">
+              <div class="coupon-new-label">5월 한정가</div>
+              <div class="coupon-new-price">3,000,000원</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 우: 이유 박스 -->
+      <div class="s8-reason">
+        <div class="s8-reason-t">왜 700만원짜리 작업을 5월에만 300만원에?</div>
+        <div class="s8-reason-body">
+          <strong style="color:var(--yel)">1.</strong> AI가 아직 '업종별 답'을 굳히지 않은 지금이 골든타임. 학습이 누적되면 후발주자는 5배의 콘텐츠 필요.<br>
+          <strong style="color:var(--yel)">2.</strong> 7번째 업종 레퍼런스 확보 단계. 레퍼런스 누적 → 단가 인상. <strong>6월부터 매월 +50만원.</strong>
+        </div>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,184,0,.2);font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--yel);letter-spacing:.05em;line-height:1.9">
+          ⚠ <strong style="color:#fff">5월 300만원</strong> → 6월 350만원 → 7월 400만원 → 8월 450만원 → 정가 700만원
+        </div>
+      </div>
+    </div>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="p-plan">PLAN 01</div>
+        <div class="p-badge b50">-50% OFF · 5월 한정</div>
+        <div class="p-title">기존 홈페이지 AEO 최적화</div>
+        <div class="p-orig">3,000,000원</div>
+        <div class="p-curr">150만원</div>
+        <ul class="p-feats">
+          <li>AEO 가시성 정밀 진단</li>
+          <li>스키마 마크업 재설계</li>
+          <li>수식어별 FAQ 50개 작성</li>
+          <li>4개 AI 채널 동시 최적화</li>
+        </ul>
+        <button class="p-cta ol" onclick="scrollToForm()">PLAN 01 상담 신청</button>
+      </div>
+      <div class="price-card rec">
+        <div class="p-plan">PLAN 02</div>
+        <div class="p-badge b57">-57% OFF · 5월 한정</div>
+        <div class="p-title">신규 홈페이지 제작 + AEO</div>
+        <div class="p-orig">7,000,000원</div>
+        <div class="p-curr">300만원</div>
+        <ul class="p-feats">
+          <li>PLAN 01 전체 항목 포함</li>
+          <li>신규 디자인·개발 (7페이지 이내)</li>
+          <li>수식어별 FAQ 50개 작성</li>
+          <li>유지보수 3개월 무료 <span style="color:var(--t2);font-size:11px">(4개월차부터 월 10만원)</span></li>
+          <li>1페이지 추가당 50만원 추가</li>
+        </ul>
+        <button class="p-cta fi" onclick="scrollToForm()">지금 신청하기 →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ████████████████████████████████
+     S9 · FAQ
+████████████████████████████████ -->
+<section id="sfaq" style="min-height:auto">
+  <div class="faq-wrap" style="margin:0 auto">
+    <div class="faq-title">자주 묻는 질문</div>
+    <div class="fq"><div class="fq-q" onclick="faq(this)">Q1. '인용'과 '추천'의 차이는?</div><div class="fq-a">인용은 AI가 우리 정보를 참고 출처로만 활용—회사명·URL 미노출, 그러나 AI 신뢰 데이터로 누적됩니다. 추천은 AI가 직접 '이 회사가 가장 좋습니다'라고 답—회사명·URL 직접 노출됩니다. 추천은 인용이 누적된 결과입니다. 인용을 못 받으면 추천도 시작 못 합니다.</div></div>
+    <div class="fq"><div class="fq-q" onclick="faq(this)">Q2. AI는 정말 1등만 추천하나요?</div><div class="fq-a">아닙니다. AI는 한 번에 3~5개 회사를 답변에 포함시킵니다. Trustmary, Metricus 등 분석에 따르면 ChatGPT는 평균 3~5개, Perplexity는 2~4개 브랜드를 포함합니다. 다만 그 안에 들지 못하면 고객 눈에는 우리 브랜드가 '존재하지 않는 것'과 같습니다.</div></div>
+    <div class="fq"><div class="fq-q" onclick="faq(this)">Q3. 한국 홈페이지가 정말 95%나 AI에게 인용 못 되나요?</div><div class="fq-a">정확한 95% 통계는 자체 추정이지만, 4가지 구조적 이유가 있습니다. ① JavaScript 동적 렌더링 (AI 크롤러는 JS 처리 못함) ② 텍스트 정보를 이미지로만 표현 ③ Schema 마크업 부재 ④ FAQ/Q&A 구조화 부재. 이 4가지를 해결하지 않으면 AI는 사이트를 정확히 읽을 수 없습니다.</div></div>
+    <div class="fq"><div class="fq-q" onclick="faq(this)">Q4. AEO가 정확히 무엇인가요?</div><div class="fq-a">'AI 답변에 들어가게 만드는 작업'입니다. 핵심은 '수식어 매핑'입니다. 예: '강남에서 잘하는 울세라 리프팅 병원 추천해줘' → 강남(지역) + 잘하는(품질) + 울세라 리프팅(시술) + 추천(의도) 4개 수식어. 엑스넥스는 이 수식어 조합에 맞는 FAQ 50개를 사이트에 미리 깔아둡니다. AI가 해당 질문에 답할 때 우리 FAQ를 인용하면서 우리 회사를 답변에 포함시킵니다.</div></div>
+    <div class="fq"><div class="fq-q" onclick="faq(this)">Q5. ChatGPT 외 다른 AI에도 추천되나요?</div><div class="fq-a">ChatGPT·Gemini·Perplexity·Claude 4개 생성형 AI는 모두 다른 알고리즘을 사용합니다. 엑스넥스는 각 생성형 AI의 알고리즘에 맞춘 구조로 동시 최적화합니다.</div></div>
+    <div class="fq"><div class="fq-q" onclick="faq(this)">Q6. 제작은 얼마나 걸리나요?</div><div class="fq-a">신규 제작 + AEO는 평균 2~3주 소요됩니다. 디자인 협의 1~2주, 개발 1주 기준입니다. 기존 홈페이지 AEO 최적화는 1~2주 소요됩니다.</div></div>
+    <div class="fq"><div class="fq-q" onclick="faq(this)">Q7. 가격이 정말 매월 오르나요?</div><div class="fq-a">네. 5월 300만원 → 6월 350만원 → 7월 400만원 순으로 매월 50만원씩 인상되며, 정가 700만원 도달 시 한정 가격 종료합니다. 한정 가격 적용은 '5월 31일 23:59까지 신청 완료 + 계약금 입금 기준'입니다.</div></div>
+    <div class="fq"><div class="fq-q" onclick="faq(this)">Q8. 이후 유지보수 비용이 있나요?</div><div class="fq-a">PLAN 02의 경우 3개월 무료 유지보수가 포함됩니다. 4개월차부터는 월 10만원이며, 페이지 추가 시 1페이지당 50만원이 추가됩니다. PLAN 01 유지보수는 별도 협의입니다.</div></div>
+  </div>
+</section>
+
+<!-- ████████████████████████████████
+     S9 · FORM
+████████████████████████████████ -->
+<section id="s9">
+  <canvas id="formCanvas"></canvas>
+  <div class="s9-wrap">
+    <div class="form-badge"><span class="form-badge-dot"></span>🔴 잔여 4자리 마감 임박</div>
+    <h2 class="form-h">1분 안에 무료 상담 신청</h2>
+    <p class="form-sub">신청 즉시 소개서·6개 업종 레퍼런스를 이메일로 발송합니다.</p>
+    <div class="form-card">
+      <form id="cForm">
+        <div class="form-row">
+          <div class="form-field"><label class="form-lbl">회사명 <span>*</span></label><input class="form-inp" type="text" name="company" inputmode="text" autocomplete="organization" placeholder="(주) 회사명" required></div>
+          <div class="form-field"><label class="form-lbl">담당자명 <span>*</span></label><input class="form-inp" type="text" name="name" inputmode="text" autocomplete="name" placeholder="홍길동" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label class="form-lbl">전화번호 <span>*</span></label><input class="form-inp" type="tel" name="phone" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" required></div>
+          <div class="form-field">
+            <label class="form-lbl">이메일 <span>*</span></label>
+            <input class="form-inp" type="email" name="email" inputmode="email" autocomplete="email" placeholder="name@company.com" required>
+          </div>
+        </div>
+        <div class="form-field" style="margin-bottom:14px">
+          <label class="form-lbl">업종 <span>*</span></label>
+          <select class="form-sel" name="industry" required>
+            <option value="" disabled selected>업종 선택</option>
+            <option>병원/의원</option><option>법무사/변호사</option><option>학원/교육</option>
+            <option>쇼핑몰/이커머스</option><option>인테리어/시공</option><option>여행/숙박</option>
+            <option>부동산/등기</option><option>기타</option>
+          </select>
+        </div>
+        <div class="form-check"><input type="checkbox" id="pa" required><label for="pa">(필수) 개인정보 수집·이용에 동의합니다</label></div>
+        <button type="submit" class="form-submit">무료 상담 신청 →</button>
+        <p class="form-safe">🔒 무리한 영업 전화 없음 · 신청 즉시 자료 자동 발송</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="modal-ov" id="modal">
+  <div class="modal-box">
+    <div class="modal-ico">✓</div>
+    <div class="modal-t">상담 신청 완료!</div>
+    <div class="modal-b">입력하신 이메일 주소로 서비스 소개서와 6개 업종 레퍼런스 자료를 24시간 이내에 보내드리겠습니다.</div>
+    <div class="modal-info">📞 전담 컨설턴트가 48시간 내 직접 연락드립니다</div>
+    <button class="modal-cls" onclick="closeModal()">확인</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-logo">X<em>NEX</em> AEO</div>
+    <div class="footer-links">
+      <span class="footer-link">AEO 홈페이지</span>
+      <span class="footer-link">레퍼런스</span>
+      <span class="footer-link">가격</span>
+      <span class="footer-link" onclick="document.getElementById('sfaq').scrollIntoView({behavior:'smooth'})">FAQ</span>
+      <span class="footer-link">개인정보처리방침</span>
+      <span class="footer-link">이용약관</span>
+    </div>
+  </div>
+  <div class="footer-biz">(주)엑스넥스 · 대표: 양인철 · contact@xnex.kr</div>
+  <div class="footer-copy">© 2026 (주)엑스넥스. All rights reserved.</div>
+</footer>
+
+<!-- STICKY BAR -->
+<div class="sbar" id="sbar">
+  <div class="sbar-l"><span class="sbar-dot"></span>잔여 <strong>4자리</strong> · 6월부터 인상</div>
+  <button class="sbar-btn" onclick="scrollToForm()">지금 신청 →</button>
+</div>
+
+<script>
+// ══ CURSOR ══
+const cur = document.getElementById('cursor');
+const curR = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cur.style.left = mx+'px'; cur.style.top = my+'px';
+});
+function animCursor(){
+  rx += (mx-rx)*.12; ry += (my-ry)*.12;
+  curR.style.left = rx+'px'; curR.style.top = ry+'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+document.querySelectorAll('button,a,.chip,.ref-card,.fq-q').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    curR.style.width='60px';curR.style.height='60px';
+    curR.style.borderColor='rgba(224,32,32,.6)';
+  });
+  el.addEventListener('mouseleave',()=>{
+    curR.style.width='40px';curR.style.height='40px';
+    curR.style.borderColor='rgba(255,255,255,.4)';
+  });
+});
+
+// ══ HERO CANVAS — PARTICLE NETWORK ══
+(function(){
+  const c = document.getElementById('heroCanvas');
+  const ctx = c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
+  resize();window.addEventListener('resize',()=>{resize();init()});
+  function init(){
+    pts=[];
+    const n=Math.floor(W*H/8000);
+    for(let i=0;i<n;i++) pts.push({
+      x:Math.random()*W, y:Math.random()*H,
+      vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.4,
+      r:Math.random()*1.5+.5,
+      col:Math.random()<.15?'rgba(224,32,32,':'rgba(255,255,255,'
+    });
+  }
+  init();
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // bg gradient
+    const grd=ctx.createRadialGradient(W*.3,H*.4,0,W*.3,H*.4,W*.7);
+    grd.addColorStop(0,'rgba(224,32,32,.04)');
+    grd.addColorStop(1,'transparent');
+    ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
+    // lines
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<120){
+          ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
+          ctx.strokeStyle=`rgba(255,255,255,${.06*(1-d/120)})`;ctx.lineWidth=.5;ctx.stroke();
+        }
+      }
+    }
+    // dots
+    pts.forEach(p=>{
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.col+'.7)';ctx.fill();
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+    });
+    // scan line
+    frame++;
+    const sl=((frame*.5)%H);
+    ctx.beginPath();ctx.moveTo(0,sl);ctx.lineTo(W,sl);
+    ctx.strokeStyle='rgba(224,32,32,.04)';ctx.lineWidth=1;ctx.stroke();
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ══ FORM CANVAS — GRID PULSE ══
+(function(){
+  const c=document.getElementById('formCanvas');
+  const ctx=c.getContext('2d');
+  let W,H;
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
+  resize();window.addEventListener('resize',resize);
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const gs=60;
+    for(let x=0;x<W;x+=gs){
+      for(let y=0;y<H;y+=gs){
+        const d=Math.sqrt((x-W/2)**2+(y-H/2)**2);
+        const wave=Math.sin(d*.02-t*.04);
+        const a=Math.max(0,.03+wave*.02);
+        ctx.fillStyle=`rgba(224,32,32,${a})`;
+        ctx.fillRect(x,y,1,1);
+      }
+    }
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ══ SIM AUTOPLAY ══
+(function(){
+  const ids=['ts1','ts2','ts3'];let i=0;
+  function next(){
+    if(i<ids.length){document.getElementById(ids[i]).classList.add('on');i++;setTimeout(next,i===1?1800:i===2?2800:3800)}
+    else{setTimeout(()=>{i=0;ids.forEach(id=>document.getElementById(id).classList.remove('on'));setTimeout(next,500)},5000)}
+  }
+  setTimeout(next,600);
+})();
+
+// ══ MODIFIER INTERACTIVE ══
+const allFaqs=[
+  "강남에서 울세라 잘하는 병원은?",
+  "울세라 가격은 얼마부터인가요?",
+  "강남 역삼동 리프팅 전문 병원은?",
+  "울세라 받기 좋은 시기는?",
+  "울세라 리프팅 후기 좋은 곳은?",
+  "리프팅 시술 비교 — 울세라 vs 써마지?",
+  "울세라 효과 얼마나 지속되나요?"
+];
+function selectChip(el){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  const faqs=el.dataset.faqs.split(',').map(Number);
+  document.querySelectorAll('.faq-it').forEach((f,i)=>{
+    f.classList.toggle('on',faqs.includes(i));
+  });
+}
+// init first chip
+document.querySelectorAll('.faq-it').forEach((f,i)=>{f.classList.toggle('on',[0,1,2,3].includes(i))});
+
+// ══ PIPELINE ANIMATE ══
+(function(){
+  const steps=document.querySelectorAll('.pipe-step');
+  let si=0;
+  const obs=new IntersectionObserver(ens=>{
+    if(ens[0].isIntersecting){
+      function a(){steps.forEach((s,i)=>s.classList.toggle('on',i===si));si=(si+1)%steps.length}
+      a();const iv=setInterval(a,1500);obs.disconnect();setTimeout(()=>clearInterval(iv),10000);
+      // trigger fill bar
+      setTimeout(()=>{document.querySelector('.reject-fill').style.width='95%'},500);
+    }
+  },{threshold:.3});
+  const el=document.getElementById('pipelineEl');if(el)obs.observe(el);
+})();
+
+// ══ PODIUM ENTRANCE ANIMATION ══
+(function(){
+  const slots=document.querySelectorAll('.podium-slot:not(.invisible)');
+  const obs=new IntersectionObserver(ens=>{
+    if(ens[0].isIntersecting){
+      slots.forEach((s,i)=>{
+        setTimeout(()=>{
+          s.style.transition='transform .6s cubic-bezier(.34,1.56,.64,1),opacity .4s';
+          s.style.opacity='1';s.style.transform='translateY(0)';
+        },i*150);
+      });obs.disconnect();
+    }
+  },{threshold:.4});
+  slots.forEach(s=>{s.style.opacity='0';s.style.transform='translateY(40px)'});
+  const wrap=document.querySelector('.podium-wrap');if(wrap)obs.observe(wrap);
+})();
+
+// ══ SCROLL FADE ══
+const fuEls=document.querySelectorAll('section');
+const io=new IntersectionObserver(ens=>{
+  ens.forEach(e=>{if(e.isIntersecting)e.target.classList.add('sec-visible')});
+},{threshold:.1});
+fuEls.forEach(el=>io.observe(el));
+
+// ══ FAQ ══
+function faq(el){
+  const b=el.parentElement,was=b.classList.contains('open');
+  document.querySelectorAll('.fq.open').forEach(x=>x.classList.remove('open'));
+  if(!was)b.classList.add('open');
+}
+
+// ══ STICKY BAR — hide when form visible ══
+const sbar=document.getElementById('sbar');
+const formSection=document.getElementById('s9');
+window.addEventListener('scroll',()=>{
+  const fRect=formSection.getBoundingClientRect();
+  const formVisible = fRect.top < window.innerHeight && fRect.bottom > 0;
+  sbar.classList.toggle('on', window.scrollY>500 && !formVisible);
+});
+
+// ══ FORM ══
+function scrollToForm(){document.getElementById('s9').scrollIntoView({behavior:'smooth'})}
+document.getElementById('cForm').addEventListener('submit',e=>{
+  e.preventDefault();document.getElementById('modal').classList.add('on');
+});
+function closeModal(){
+  document.getElementById('modal').classList.remove('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ══ REF CARD HOVER RIPPLE ══
+document.querySelectorAll('.ref-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=((e.clientX-r.left)/r.width*100).toFixed(1);
+    const y=((e.clientY-r.top)/r.height*100).toFixed(1);
+    card.style.background=`radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,.06), rgba(255,255,255,.02))`;
+  });
+  card.addEventListener('mouseleave',()=>{card.style.background=''});
+});
+</script>
+</body>
+</html>

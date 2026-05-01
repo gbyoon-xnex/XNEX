@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>XNEX AX — AI 업무 전환</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" crossorigin=""/>
+<style>
+:root{
+  --bg:#060608;--bg1:#0c0c10;--bg2:#131318;
+  --org:#FF6B35;--org2:#ff8c5a;--org-dim:rgba(255,107,53,.12);
+  --t0:#f0f0f4;--t1:rgba(240,240,244,.6);--t2:rgba(240,240,244,.3);
+  --line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.12);
+  --grn:#22d3a5;
+  --fd:'Bebas Neue',sans-serif;
+  --fb:'Pretendard','Apple SD Gothic Neo',sans-serif;
+  --fm:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t0);font-family:var(--fb);overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased}
+canvas#bgC{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.6}
+
+/* ── CURSOR ── */
+#cur{position:fixed;z-index:9999;pointer-events:none;mix-blend-mode:exclusion}
+.cur-dot{width:10px;height:10px;background:#fff;border-radius:50%;transform:translate(-50%,-50%)}
+.cur-ring{position:fixed;width:40px;height:40px;border:1.5px solid var(--org);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .35s,height .35s,border-color .3s,opacity .3s}
+body.hovering .cur-ring{width:60px;height:60px;border-color:#fff}
+
+/* ── NAV ── */
+.gnb{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;transition:background .4s}
+.gnb.scrolled{background:rgba(6,6,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.gnb-logo{font-family:var(--fd);font-size:24px;letter-spacing:.1em;color:#fff;text-decoration:none}
+.gnb-logo span{color:var(--org)}
+.gnb-links{display:flex;gap:6px}
+.gnb-a{font-family:var(--fm);font-size:13px;letter-spacing:.12em;color:var(--t2);padding:7px 16px;border-radius:3px;cursor:pointer;transition:all .2s;text-decoration:none;text-transform:uppercase}
+.gnb-a:hover,.gnb-a.on{color:var(--t0);background:var(--line)}
+.gnb-cta{font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:var(--org);color:#000;border:none;border-radius:3px;padding:9px 20px;cursor:pointer;transition:all .2s}
+.gnb-cta:hover{background:var(--org2);transform:translateY(-1px)}
+
+/* ── FLOAT CTA ── */
+.fcta{position:fixed;bottom:32px;right:32px;z-index:300;opacity:0;transform:translateY(20px);pointer-events:none;transition:all .4s}
+.fcta.on{opacity:1;transform:translateY(0);pointer-events:all}
+.fcta-btn{font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--org);color:#000;border:none;border-radius:3px;padding:12px 24px;cursor:pointer;box-shadow:0 8px 40px rgba(255,107,53,.5);transition:all .2s}
+.fcta-btn:hover{background:var(--org2);transform:translateY(-2px)}
+
+/* ══════════════ HERO ══════════════ */
+#hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;z-index:1;padding-bottom:80px}
+.hero-bg-text{position:absolute;font-family:var(--fd);font-size:clamp(160px,22vw,320px);letter-spacing:-.02em;color:rgba(255,107,53,.04);line-height:1;top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;pointer-events:none;user-select:none;z-index:0}
+.hero-inner{position:relative;z-index:2;padding:0 40px;width:100%;max-width:1400px;margin:0 auto;padding-top:100px}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--fm);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--org);margin-bottom:32px}
+.hero-tag::before{content:'';width:24px;height:1px;background:var(--org)}
+.hero-h1{font-family:var(--fd);font-size:clamp(72px,12vw,180px);line-height:.92;letter-spacing:-.01em;margin-bottom:40px;color:#fff}
+.hero-h1 .line2{color:var(--org);display:block;position:relative;overflow:hidden}
+.hero-h1 .reveal-word{display:inline-block;transform:translateY(110%);animation:wordUp .9s cubic-bezier(.16,1,.3,1) forwards}
+.hero-h1 .reveal-word:nth-child(2){animation-delay:.1s}
+@keyframes wordUp{to{transform:translateY(0)}}
+/* 우측 실시간 카운터 */
+.hero-aside{position:absolute;right:40px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:2px;padding-top:100px}
+.hero-stat{text-align:right;padding:20px 0;border-bottom:1px solid var(--line)}
+.hero-stat:last-child{border-bottom:none}
+.hs-num{font-family:var(--fd);font-size:clamp(36px,4vw,56px);color:var(--org);line-height:1}
+.hs-lbl{font-family:var(--fm);font-size:9px;letter-spacing:.12em;color:var(--t2);margin-top:4px;text-transform:uppercase}
+/* 스크롤 인디케이터 */
+.scroll-ind{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:.5}
+.scroll-ind span{font-family:var(--fm);font-size:9px;letter-spacing:.2em;color:var(--t2);text-transform:uppercase}
+.scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,var(--org),transparent);animation:scrollAnim 1.6s ease-in-out infinite}
+@keyframes scrollAnim{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ══════════════ S2 — TRANSFORMATION COUNTER ══════════════ */
+#s2{position:relative;z-index:1;padding:0}
+.transform-band{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.tb{padding:60px 40px;border-right:1px solid var(--line);position:relative;overflow:hidden;transition:background .3s;cursor:default}
+.tb:last-child{border-right:none}
+.tb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--org);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.tb:hover{background:rgba(255,107,53,.04)}
+.tb:hover::after{transform:scaleX(1)}
+.tb-num{font-family:var(--fd);font-size:clamp(52px,6vw,88px);line-height:.9;color:var(--t0);margin-bottom:12px}
+.tb-num em{color:var(--org);font-style:normal}
+.tb-lbl{font-family:var(--fm);font-size:13px;letter-spacing:.1em;color:var(--t2);text-transform:uppercase;line-height:1.6}
+
+/* ══════════════ S3 — ROI CALCULATOR ══════════════ */
+#s3{position:relative;z-index:1;padding:100px 40px;background:var(--bg1)}
+.roi-layout{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.roi-left .sec-tag{font-family:var(--fm);font-size:12px;letter-spacing:.18em;color:var(--org);text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.roi-left .sec-tag::before{content:'';width:20px;height:1px;background:var(--org)}
+.roi-left h2{font-family:var(--fd);font-size:clamp(36px,5vw,64px);line-height:.95;letter-spacing:-.01em;margin-bottom:20px}
+.roi-left h2 em{font-style:normal;color:var(--org);display:block}
+.roi-left p{font-size:14px;color:var(--t1);line-height:1.9;max-width:420px}
+/* 계산기 */
+.calc-card{background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:36px;position:relative;overflow:hidden}
+.calc-card::before{content:'ROI CALCULATOR';position:absolute;top:16px;right:20px;font-family:var(--fm);font-size:9px;letter-spacing:.14em;color:var(--t2)}
+.calc-row{margin-bottom:24px}
+.calc-lbl{font-family:var(--fm);font-size:12px;letter-spacing:.12em;color:var(--t2);text-transform:uppercase;margin-bottom:10px}
+.calc-slider{-webkit-appearance:none;width:100%;height:4px;background:var(--line2);border-radius:2px;outline:none;cursor:pointer}
+.calc-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--org);cursor:pointer;box-shadow:0 0 16px rgba(255,107,53,.5);transition:transform .15s}
+.calc-slider:hover::-webkit-slider-thumb{transform:scale(1.2)}
+.calc-val{font-family:var(--fd);font-size:28px;color:var(--t0);margin-top:8px}
+.calc-divider{height:1px;background:var(--line);margin:20px 0}
+.calc-result{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.calc-result-lbl{font-family:var(--fm);font-size:10px;letter-spacing:.1em;color:var(--t2);text-transform:uppercase}
+.calc-result-num{font-family:var(--fd);font-size:52px;color:var(--org);line-height:1;transition:color .3s}
+.calc-result-unit{font-family:var(--fm);font-size:11px;color:var(--t2)}
+
+/* ══════════════ S4 — BEFORE/AFTER INTERACTIVE ══════════════ */
+#s4{position:relative;z-index:1;padding:100px 40px}
+.ba-header{max-width:1200px;margin:0 auto 60px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px}
+.ba-header h2{font-family:var(--fd);font-size:clamp(36px,5vw,64px);line-height:.95;letter-spacing:-.01em}
+.ba-header h2 em{font-style:normal;color:var(--org);display:block}
+.ba-header p{font-family:var(--fm);font-size:11px;letter-spacing:.08em;color:var(--t2)}
+/* 인터랙티브 BA 카드 */
+.ba-track{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:2px}
+.ba-item{display:grid;grid-template-columns:1fr 56px 1fr;align-items:stretch;background:var(--bg1);border:1px solid var(--line);border-radius:4px;overflow:hidden;transition:border-color .25s;cursor:default}
+.ba-item:hover{border-color:var(--org)}
+.ba-cell{padding:24px 28px;transition:all .4s}
+.ba-cell.b{color:rgba(255,255,255,.22);font-size:16px;line-height:1.6}
+.ba-cell.arr{display:flex;align-items:center;justify-content:center;border-left:1px solid var(--line);border-right:1px solid var(--line);font-size:18px;color:rgba(255,255,255,.1);transition:all .4s}
+.ba-cell.a{color:rgba(255,255,255,.18);font-size:16px;line-height:1.6;font-weight:500}
+.ba-cell.a strong{color:rgba(255,107,53,.25);transition:color .4s}
+/* 호버 상태 */
+.ba-item:hover .ba-cell.b{color:rgba(255,255,255,.5)}
+.ba-item:hover .ba-cell.arr{color:var(--org);transform:translateX(3px)}
+.ba-item:hover .ba-cell.a{color:#fff}
+.ba-item:hover .ba-cell.a strong{color:var(--org)}
+/* 스크롤 시퀀스 */
+.ba-item.seq-b{border-left:3px solid var(--t2)}
+.ba-item.seq-b .ba-cell.b{color:rgba(255,255,255,.75)}
+.ba-item.seq-a{border-left:3px solid var(--org)}
+.ba-item.seq-a .ba-cell.b{color:rgba(255,255,255,.2)}
+.ba-item.seq-a .ba-cell.arr{color:var(--org)}
+.ba-item.seq-a .ba-cell.a{color:#fff}
+.ba-item.seq-a .ba-cell.a strong{color:var(--org)}
+
+/* ══════════════ S5 — ALLIANCE VISUAL ══════════════ */
+#s5{position:relative;z-index:1;padding:100px 0;background:var(--bg1);border-top:1px solid var(--line)}
+.alliance-inner{max-width:1400px;margin:0 auto;padding:0 40px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+/* 캔버스 허브 */
+.hub-canvas-wrap{position:relative;width:100%;aspect-ratio:1;max-width:520px;margin:0 auto}
+canvas#hubCanvas{width:100%;height:100%}
+/* 텍스트 사이드 */
+.alliance-text .sec-tag{font-family:var(--fm);font-size:12px;letter-spacing:.18em;color:var(--org);text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.alliance-text .sec-tag::before{content:'';width:20px;height:1px;background:var(--org)}
+.alliance-text h2{font-family:var(--fd);font-size:clamp(36px,4.5vw,60px);line-height:.95;letter-spacing:-.01em;margin-bottom:28px}
+.alliance-text h2 em{font-style:normal;color:var(--org);display:block}
+/* Fix 3: Alliance team rows — bigger font, no emoji layout */
+.tr-item{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--line);transition:all .2s;cursor:default}
+.tr-item:last-child{border-bottom:none}
+.tr-item:hover{padding-left:10px}
+.tr-item:hover .tr-name{color:var(--org)}
+.tr-name{font-family:var(--fd);font-size:22px;letter-spacing:.04em;color:var(--t0);transition:color .2s}
+.tr-role{font-family:var(--fm);font-size:12px;letter-spacing:.08em;color:var(--t2);text-transform:uppercase}
+
+/* ══════════════ S6 — PROCESS HORIZONTAL ══════════════ */
+#s6{position:relative;z-index:1;padding:100px 0;overflow:hidden}
+.proc-header{padding:0 40px;max-width:1200px;margin:0 auto 60px}
+.proc-header .sec-tag{font-family:var(--fm);font-size:12px;letter-spacing:.18em;color:var(--org);text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.proc-header .sec-tag::before{content:'';width:20px;height:1px;background:var(--org)}
+.proc-header h2{font-family:var(--fd);font-size:clamp(36px,5vw,64px);line-height:.95;letter-spacing:-.01em}
+.proc-header h2 em{font-style:normal;color:var(--org)}
+.proc-track{display:flex;gap:0;padding:0 40px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+.proc-track::-webkit-scrollbar{display:none}
+.proc-step{flex:0 0 280px;padding:40px 32px;border:1px solid var(--line);border-right:none;position:relative;transition:background .2s;cursor:default}
+.proc-step:last-child{border-right:1px solid var(--line)}
+.proc-step:hover{background:rgba(255,107,53,.04)}
+.proc-step::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--org);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.proc-step:hover::before{transform:scaleX(1)}
+.proc-num{font-family:var(--fd);font-size:80px;color:rgba(255,255,255,.06);line-height:1;margin-bottom:16px;transition:color .2s}
+.proc-step:hover .proc-num{color:rgba(255,107,53,.15)}
+.proc-badge{display:inline-block;font-family:var(--fm);font-size:9px;letter-spacing:.12em;padding:3px 10px;border-radius:2px;margin-bottom:14px}
+.proc-badge.free{background:rgba(255,107,53,.12);color:var(--org);border:1px solid rgba(255,107,53,.25)}
+.proc-badge.normal{background:var(--line);color:var(--t2);border:1px solid var(--line2)}
+.proc-h{font-size:18px;font-weight:700;color:var(--t0);margin-bottom:8px;line-height:1.3}
+.proc-desc{font-size:15px;color:var(--t2);line-height:1.7}
+.proc-desc strong{color:var(--t1)}
+/* 연결선 */
+.proc-arrow{flex:0 0 40px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.1);font-size:18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+/* ══════════════ S7 — CHECKLIST INTERACTIVE ══════════════ */
+#s7{position:relative;z-index:1;padding:100px 40px;background:var(--bg1);border-top:1px solid var(--line)}
+.check-layout{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.check-left .sec-tag{font-family:var(--fm);font-size:12px;letter-spacing:.18em;color:var(--org);text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.check-left .sec-tag::before{content:'';width:20px;height:1px;background:var(--org)}
+.check-left h2{font-family:var(--fd);font-size:clamp(36px,4.5vw,56px);line-height:.95;letter-spacing:-.01em;margin-bottom:8px}
+.check-left h2 em{font-style:normal;color:var(--org);display:block}
+/* 체크 항목 */
+.cl-items{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.cl-item{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s;user-select:none}
+.cl-item:last-child{border-bottom:none}
+.cl-item:hover{background:rgba(255,255,255,.03)}
+.cl-item.on{background:rgba(255,107,53,.06)}
+.cl-box{width:18px;height:18px;border-radius:3px;border:1.5px solid var(--line2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s}
+.cl-item.on .cl-box{background:var(--org);border-color:var(--org);color:#000;font-weight:700}
+.cl-text{font-size:15px;color:var(--t2);line-height:1.4;transition:color .2s}
+.cl-item.on .cl-text{color:var(--t0)}
+/* Fix 4: 진단 결과 — 상단 정렬 + 체크 수에 따른 지표 */
+.diag-result{background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:28px;min-height:0;display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.diag-score{font-family:var(--fd);font-size:100px;color:var(--org);line-height:1;transition:all .5s}
+.diag-bar-wrap{width:100%}
+.diag-bar-track{width:100%;height:4px;background:var(--line2);border-radius:2px;overflow:hidden}
+.diag-bar-fill{height:100%;background:linear-gradient(90deg,var(--org),var(--org2));border-radius:2px;width:0;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.diag-msg{font-family:var(--fm);font-size:13px;letter-spacing:.07em;color:var(--t2);line-height:1.7;transition:all .4s}
+.diag-msg.urgent{color:var(--org)}
+.diag-kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;opacity:0;transform:translateY(8px);transition:all .5s}
+.diag-kpis.show{opacity:1;transform:translateY(0)}
+.dk{background:var(--bg3);border:1px solid var(--line);border-radius:5px;padding:12px 14px}
+.dk-n{font-family:var(--fd);font-size:24px;color:var(--grn);line-height:1;margin-bottom:3px}
+.dk-l{font-family:var(--fm);font-size:9px;color:var(--t2);letter-spacing:.08em;text-transform:uppercase}
+.diag-cta{display:none}
+.diag-cta.show{display:block}
+
+/* Fix 5: form-right — 더 풍부하게 */
+.form-right{padding-top:0;display:flex;flex-direction:column;gap:0}
+.form-right-h{font-family:var(--fm);font-size:11px;letter-spacing:.15em;color:var(--org);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.form-right-h::before{content:'';width:14px;height:1px;background:var(--org)}
+.ps-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:20px}
+.ps{display:flex;align-items:flex-start;gap:14px;padding:18px 20px;border-bottom:1px solid var(--line);transition:background .2s}
+.ps:last-child{border-bottom:none}
+.ps:hover{background:rgba(255,107,53,.04)}
+.ps-step{font-family:var(--fd);font-size:28px;color:rgba(255,107,53,.2);line-height:1;flex-shrink:0;width:32px;transition:color .2s}
+.ps:hover .ps-step{color:var(--org)}
+.ps-h{font-size:15px;font-weight:700;color:var(--t0);margin-bottom:3px}
+.ps-d{font-size:13px;color:var(--t2);line-height:1.6}
+/* 보증 배지 */
+.form-guarantee{display:flex;flex-direction:column;gap:8px}
+.fguarantee-item{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--line);border-radius:5px}
+.fgi-ico{width:28px;height:28px;border-radius:4px;background:var(--org-dim);border:1px solid rgba(255,107,53,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+.fgi-text{font-size:13px;color:var(--t1);line-height:1.4}
+.fgi-text strong{color:var(--t0)}
+
+/* Fix 6: FAQ — full width, dramatic numbers */
+#s11{position:relative;z-index:1;padding:100px 0;background:var(--bg1);border-top:1px solid var(--line)}
+.faq-header{padding:0 40px;max-width:1200px;margin:0 auto 60px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.faq-header h2{font-family:var(--fd);font-size:clamp(48px,6vw,80px);line-height:.92;letter-spacing:-.01em}
+.faq-header h2 em{font-style:normal;color:var(--org)}
+.faq-header p{font-family:var(--fm);font-size:11px;color:var(--t2);letter-spacing:.08em;text-transform:uppercase;padding-bottom:8px}
+.faq-list{display:flex;flex-direction:column}
+.fq{position:relative;border-bottom:1px solid var(--line);transition:background .25s}
+.fq:first-child{border-top:1px solid var(--line)}
+.fq:hover{background:rgba(255,255,255,.02)}
+.fq.open{background:rgba(255,107,53,.04)}
+.fq-inner{max-width:1200px;margin:0 auto;padding:0 40px;position:relative}
+.fq-num{position:absolute;left:40px;top:28px;font-family:var(--fd);font-size:13px;color:rgba(255,107,53,.35);letter-spacing:.1em;transition:color .2s}
+.fq.open .fq-num{color:var(--org)}
+.fq-q{display:flex;justify-content:space-between;align-items:center;padding:26px 0 26px 40px;cursor:pointer;font-size:18px;font-weight:700;color:var(--t0);transition:color .2s;gap:20px;line-height:1.3}
+.fq-q:hover{color:var(--org)}
+.fq.open .fq-q{color:var(--org)}
+.fq-arr{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--line2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s;font-size:18px;color:var(--t2)}
+.fq.open .fq-arr{background:var(--org);border-color:var(--org);color:#000;transform:rotate(45deg)}
+.fq-a{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1);font-size:15px;color:var(--t1);line-height:1.9}
+.fq.open .fq-a{max-height:240px}
+.fq-a-inner{padding:0 0 28px 40px;max-width:800px}
+
+/* ══════════════ S8 — CASE HORIZONTAL SCROLL ══════════════ */
+#s8{position:relative;z-index:1;padding:100px 0;border-top:1px solid var(--line);overflow:visible}
+.case-header{padding:0 40px;max-width:1200px;margin:0 auto 52px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.case-header h2{font-family:var(--fd);font-size:clamp(36px,5vw,64px);line-height:.95;letter-spacing:-.01em}
+.case-header h2 em{font-style:normal;color:var(--org);display:block}
+.case-scroll{display:flex;gap:16px;padding:20px 40px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;cursor:grab}
+.case-scroll:active{cursor:grabbing}
+.case-scroll::-webkit-scrollbar{display:none}
+.case-card{flex:0 0 340px;background:var(--bg1);border:1px solid var(--line);border-radius:8px;padding:28px;transition:border-color .25s,transform .25s,box-shadow .25s}
+.case-card:hover{border-color:var(--org);transform:translateY(-6px);box-shadow:0 16px 40px rgba(255,107,53,.15)}
+.cc-industry{font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--org);margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.cc-industry::before{content:'';width:10px;height:1px;background:var(--org)}
+.cc-title{font-family:var(--fd);font-size:26px;line-height:1;letter-spacing:-.01em;color:var(--t0);margin-bottom:16px}
+.cc-title em{font-style:normal;color:var(--org)}
+.cc-metrics{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.cc-metric{font-family:var(--fd);font-size:20px;color:var(--grn);background:rgba(34,211,165,.08);border:1px solid rgba(34,211,165,.2);border-radius:4px;padding:5px 12px;line-height:1}
+.cc-desc{font-size:14px;color:var(--t2);line-height:1.7}
+
+/* ══════════════ S9 — SCARCITY COUNTDOWN ══════════════ */
+#s9{position:relative;z-index:1;padding:120px 40px;background:var(--bg1);border-top:1px solid var(--line);text-align:center;overflow:hidden}
+#s9::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(255,107,53,.06) 0%,transparent 70%);pointer-events:none}
+.sc-inner{max-width:760px;margin:0 auto;position:relative;z-index:2}
+.sc-tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--fm);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--org);margin-bottom:28px}
+.sc-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--org);animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.sc-h{font-family:var(--fd);font-size:clamp(48px,7vw,96px);line-height:.92;letter-spacing:-.02em;margin-bottom:20px;color:#fff}
+.sc-sub{font-size:17px;color:var(--t1);line-height:1.85;max-width:520px;margin:0 auto 48px}
+.sc-sub strong{color:#fff}
+/* 슬롯 */
+.sc-slot-wrap{display:inline-flex;align-items:center;gap:20px;background:rgba(255,0,0,.04);border:1px solid rgba(255,0,0,.2);border-radius:6px;padding:18px 36px;margin-bottom:12px}
+.sc-slot-l{font-family:var(--fm);font-size:10px;letter-spacing:.1em;color:var(--t2);text-transform:uppercase}
+.sc-slot{height:56px;overflow:hidden}
+.sc-slot-tr{display:flex;flex-direction:column;transition:transform .7s cubic-bezier(.4,0,.2,1)}
+.sc-slot-n{font-family:var(--fd);font-size:48px;color:#ff4444;line-height:56px;height:56px;display:block}
+.sc-slot-u{font-family:var(--fm);font-size:11px;color:var(--t2)}
+.sc-flip-tag{font-family:var(--fm);font-size:9px;letter-spacing:.14em;color:rgba(255,68,68,.5);text-transform:uppercase;margin-bottom:14px}
+.sc-flip-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:40px}
+.sc-flip-grp{display:flex;flex-direction:column;align-items:center;gap:6px}
+.sc-flip-digits{display:flex;gap:4px}
+.sc-flip-lbl{font-family:var(--fm);font-size:8px;color:var(--t2);letter-spacing:.1em;text-transform:uppercase}
+.fcard{width:46px;height:60px;perspective:200px;position:relative}
+.ffr,.fbk{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:36px;color:var(--t0);background:var(--bg2);border:1px solid var(--line2);border-radius:5px;backface-visibility:hidden}
+.ffr::after,.fbk::after{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,0,0,.25)}
+.fcard.fa .ffr{animation:fF .2s cubic-bezier(.4,0,.2,1) forwards}
+.fcard.fa .fbk{animation:fB .2s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes fF{to{transform:rotateX(-90deg)}}
+@keyframes fB{0%{transform:rotateX(90deg)}to{transform:rotateX(0)}}
+.fsep{font-family:var(--fd);font-size:28px;color:var(--org);line-height:60px;opacity:.5}
+.sc-cta{font-family:var(--fm);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:var(--org);color:#000;border:none;border-radius:3px;padding:16px 40px;cursor:pointer;transition:all .2s;box-shadow:0 6px 32px rgba(255,107,53,.35)}
+.sc-cta:hover{background:var(--org2);transform:translateY(-2px);box-shadow:0 10px 48px rgba(255,107,53,.5)}
+
+/* ══════════════ S10 — FORM ══════════════ */
+#s10{position:relative;z-index:1;padding:100px 40px;border-top:1px solid var(--line)}
+.form-layout{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.2fr 1fr;gap:80px;align-items:start}
+.form-left .sec-tag{font-family:var(--fm);font-size:12px;letter-spacing:.18em;color:var(--org);text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.form-left .sec-tag::before{content:'';width:20px;height:1px;background:var(--org)}
+.form-left h2{font-family:var(--fd);font-size:clamp(36px,4.5vw,56px);line-height:.95;letter-spacing:-.01em;margin-bottom:32px}
+.form-left h2 em{font-style:normal;color:var(--org);display:block}
+.form-card{background:rgba(255,255,255,.02);border:1px solid var(--line2);border-radius:8px;padding:32px;position:relative;overflow:hidden}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--org),transparent)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.ff{display:flex;flex-direction:column;gap:5px}
+.fl{font-family:var(--fm);font-size:9px;letter-spacing:.15em;color:var(--t2);text-transform:uppercase}
+.fl span{color:var(--org)}
+.fi{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:4px;padding:11px 13px;font-size:14px;font-family:var(--fb);color:var(--t0);outline:none;transition:border-color .2s;width:100%}
+.fi::placeholder{color:var(--t2)}
+.fi:focus{border-color:rgba(255,107,53,.5)}
+.fchk{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t1);margin:12px 0}
+.fchk input{accent-color:var(--org);width:14px;height:14px}
+.fsub{width:100%;background:var(--org);color:#000;border:none;border-radius:4px;padding:15px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--fm);letter-spacing:.1em;text-transform:uppercase;transition:all .2s}
+.fsub:hover{background:var(--org2);transform:translateY(-2px)}
+.fmc{text-align:center;margin-top:9px;font-family:var(--fm);font-size:9px;color:var(--t2);letter-spacing:.08em;text-transform:uppercase}
+/* 오른쪽 */
+.form-right{padding-top:56px}
+.form-right-h{font-family:var(--fm);font-size:10px;letter-spacing:.15em;color:var(--org);text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;gap:8px}
+.form-right-h::before{content:'';width:14px;height:1px;background:var(--org)}
+.ps-list{display:flex;flex-direction:column;gap:18px}
+.ps{display:flex;align-items:flex-start;gap:14px}
+.ps-ico{width:40px;height:40px;border-radius:6px;background:var(--bg2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ps-h{font-size:14px;font-weight:700;color:var(--t0);margin-bottom:3px}
+.ps-d{font-size:14px;color:var(--t2);line-height:1.6}
+
+/* ══════════════ FAQ ══════════════ */
+#s11{position:relative;z-index:1;padding:100px 40px;background:var(--bg1);border-top:1px solid var(--line)}
+.faq-inner{max-width:800px;margin:0 auto}
+.faq-h{font-family:var(--fd);font-size:clamp(36px,4.5vw,56px);line-height:.95;letter-spacing:-.01em;margin-bottom:44px}
+.faq-h em{font-style:normal;color:var(--org)}
+.faq-list{border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.fq{border-bottom:1px solid var(--line)}
+.fq:last-child{border-bottom:none}
+.fq-q{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;font-size:16px;font-weight:600;color:var(--t0);transition:color .2s;gap:12px}
+.fq-q:hover{color:var(--org)}
+.fq-ico{width:22px;height:22px;border-radius:50%;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--t2);flex-shrink:0;transition:all .3s}
+.fq.open .fq-ico{background:var(--org);border-color:var(--org);color:#000;transform:rotate(45deg)}
+.fq-a{max-height:0;overflow:hidden;transition:max-height .4s ease;font-size:15px;color:var(--t2);line-height:1.85}
+.fq.open .fq-a{max-height:200px;padding:0 24px 18px}
+
+/* ── MODAL ── */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-ov.on{opacity:1;pointer-events:all}
+.modal-box{background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:44px;max-width:400px;width:90%;text-align:center;transform:scale(.9);transition:transform .3s}
+.modal-ov.on .modal-box{transform:scale(1)}
+.modal-ico{width:56px;height:56px;border-radius:50%;background:rgba(255,107,53,.1);border:2px solid var(--org);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px}
+.modal-t{font-family:var(--fd);font-size:28px;margin-bottom:8px;letter-spacing:-.01em}
+.modal-b{font-size:13px;color:var(--t1);line-height:1.75;margin-bottom:20px}
+.modal-btn{background:var(--org);color:#000;border:none;padding:12px 32px;border-radius:3px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fm);letter-spacing:.1em;text-transform:uppercase;transition:all .2s}
+.modal-btn:hover{background:var(--org2)}
+
+/* ── FOOTER ── */
+.footer{background:#000;border-top:1px solid var(--line);padding:36px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;position:relative;z-index:1}
+.footer-logo{font-family:var(--fd);font-size:20px;letter-spacing:.1em}
+.footer-logo span{color:var(--org)}
+.footer-info{font-family:var(--fm);font-size:10px;color:var(--t2);letter-spacing:.06em}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .65s,transform .65s}
+.rv.in{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .roi-layout,.alliance-inner,.check-layout,.form-layout{grid-template-columns:1fr;gap:48px}
+  .hub-canvas-wrap{display:none}
+  .hero-aside{display:none}
+  #hero{padding:100px 40px}
+  .hero-inner{padding:0}
+  .proc-track{padding:0 28px}
+}
+@media(max-width:640px){
+  #cur,#cur-r,.cur-ring{display:none}body{cursor:auto}
+  .transform-band{grid-template-columns:1fr 1fr}
+  .tb{border-bottom:1px solid var(--line)}
+  .gnb-links{display:none}
+  .frow{grid-template-columns:1fr}
+  .ba-item{grid-template-columns:1fr 40px 1fr}
+  .gnb{padding:16px 20px}
+  #s3,#s4,#s7,#s9,#s10,#s11{padding-left:20px;padding-right:20px}
+  .footer{padding:28px 20px}
+}
+</style>
+</head>
+<body>
+<canvas id="bgC"></canvas>
+<div id="cur"><div class="cur-dot"></div></div>
+<div class="cur-ring" id="curR"></div>
+<div class="fcta" id="fcta"><button class="fcta-btn" onclick="sf()">무료 AX 진단 신청 →</button></div>
+
+<!-- NAV -->
+<nav class="gnb" id="gnb">
+  <a class="gnb-logo" href="/"><span>X</span>NEX</a>
+  <div class="gnb-links">
+    <a class="gnb-a" href="/">Main</a>
+    <a class="gnb-a on">AX Agency</a>
+    <a class="gnb-a" href="/aeo">AEO</a>
+    <a class="gnb-a" href="/board">Library</a>
+  </div>
+  <button class="gnb-cta" onclick="sf()">Contact</button>
+</nav>
+
+<!-- ██ HERO ██ -->
+<section id="hero">
+  <div class="hero-bg-text">AI전환</div>
+  <div class="hero-inner">
+    <div class="hero-tag">AX Consulting Agency</div>
+    <h1 class="hero-h1">
+      <div class="reveal-word">교육은<br>끝났다.</div>
+      <div class="line2"><span class="reveal-word">업무가</span> <span class="reveal-word" style="animation-delay:.15s">바뀌어야</span> <span class="reveal-word" style="animation-delay:.25s">한다.</span></div>
+    </h1>
+    <div style="display:flex;gap:14px;align-items:center;margin-top:8px">
+      <button class="gnb-cta" style="font-size:13px;padding:13px 28px" onclick="sf()">무료 AX 진단 신청 →</button>
+    </div>
+  </div>
+  <aside class="hero-aside">
+    <div class="hero-stat"><div class="hs-num" id="hc1">0</div><div class="hs-lbl">절감 시간/연</div></div>
+    <div class="hero-stat"><div class="hs-num"><span id="hc2">0</span>%+</div><div class="hs-lbl">ROI 달성</div></div>
+    <div class="hero-stat"><div class="hs-num"><span id="hc3">0</span>개월</div><div class="hs-lbl">평균 전환 완성</div></div>
+  </aside>
+  <div class="scroll-ind"><span>scroll</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- ██ S2 변환 카운터 ██ -->
+<section id="s2">
+  <div class="transform-band rv">
+    <div class="tb"><div class="tb-num"><em data-count="68" data-suffix="%">0%</em></div><div class="tb-lbl">AI 도입 필요하지만<br>시작 못 하는 기업</div></div>
+    <div class="tb"><div class="tb-num"><em data-count="37" data-suffix="%">0%</em></div><div class="tb-lbl">교육 후 실무 적용<br>실패한 직원 비율</div></div>
+    <div class="tb"><div class="tb-num">2.1<em>배</em></div><div class="tb-lbl">AI 활용 기업<br>생산성 격차</div></div>
+    <div class="tb"><div class="tb-num"><em data-count="82" data-suffix="%">0%</em></div><div class="tb-lbl">업무 반영<br>어렵다는 실무자</div></div>
+  </div>
+</section>
+
+<!-- ██ S3 ROI 계산기 ██ -->
+<section id="s3">
+  <div class="roi-layout">
+    <div class="roi-left rv">
+      <h2>직접 계산해보세요.<br><em>얼마나 아낄 수 있는지.</em></h2>
+      <p>실제 고객사 데이터 기반입니다. 인원과 업무 시간을 조정하면 예상 절감 효과를 확인할 수 있습니다.</p>
+    </div>
+    <div class="calc-card rv">
+      <div class="calc-row">
+        <div class="calc-lbl">직원 수</div>
+        <input class="calc-slider" type="range" id="empSlider" min="5" max="200" value="30" oninput="calcROI()"/>
+        <div class="calc-val"><span id="empVal">30</span>명</div>
+      </div>
+      <div class="calc-row">
+        <div class="calc-lbl">1인당 반복업무 시간/일</div>
+        <input class="calc-slider" type="range" id="hourSlider" min="0.5" max="6" step="0.5" value="2" oninput="calcROI()"/>
+        <div class="calc-val"><span id="hourVal">2</span>시간</div>
+      </div>
+      <div class="calc-divider"></div>
+      <div class="calc-result">
+        <div>
+          <div class="calc-result-lbl">연간 절감 가능 시간</div>
+          <div style="display:flex;align-items:baseline;gap:4px"><div class="calc-result-num" id="savedHours">12,480</div><div class="calc-result-unit">시간</div></div>
+        </div>
+        <div style="text-align:right">
+          <div class="calc-result-lbl">예상 비용 절감</div>
+          <div style="display:flex;align-items:baseline;gap:4px;justify-content:flex-end"><div class="calc-result-num" id="savedMoney" style="font-size:36px">2.5</div><div class="calc-result-unit">억원/년</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ██ S4 BEFORE/AFTER ██ -->
+<section id="s4">
+  <div class="ba-header rv">
+    <div>
+      <h2>타사 AX<br><em>vs XNEX AX</em></h2>
+    </div>
+    <p>// hover 또는 스크롤로 확인</p>
+  </div>
+  <div class="ba-track rv">
+    <div class="ba-item" data-ba><div class="ba-cell b">범용 커리큘럼 — 우리 업무와 무관</div><div class="ba-cell arr">→</div><div class="ba-cell a"><strong>업무 진단 후 맞춤 설계</strong></div></div>
+    <div class="ba-item" data-ba><div class="ba-cell b">이론 80%, 실습은 따라하기</div><div class="ba-cell arr">→</div><div class="ba-cell a">실습 <strong>70%</strong> + 이론 30%</div></div>
+    <div class="ba-item" data-ba><div class="ba-cell b">강사 1인이 다 진행</div><div class="ba-cell arr">→</div><div class="ba-cell a"><strong>5개 전문 법인</strong> 현업 전문가 군단 투입</div></div>
+    <div class="ba-item" data-ba><div class="ba-cell b">수료증 발급하면 끝</div><div class="ba-cell arr">→</div><div class="ba-cell a">프롬프트 라이브러리 + SOP + <strong>자동화 도구 납품</strong></div></div>
+    <div class="ba-item" data-ba><div class="ba-cell b">교육 후 변화 없음</div><div class="ba-cell arr">→</div><div class="ba-cell a">교육 후 <strong>1개월 사후 지원</strong></div></div>
+  </div>
+</section>
+
+<!-- ██ S5 얼라이언스 ██ -->
+<section id="s5">
+  <div class="alliance-inner">
+    <div class="hub-canvas-wrap rv"><canvas id="hubCanvas"></canvas></div>
+    <div class="alliance-text rv">
+      <h2>하나의 계약,<br><em>5개 전문팀.</em></h2>
+      <div class="team-rows">
+        <div class="tr-item"><span class="tr-name">XNEX AX</span><span class="tr-role">전략 총괄 · PM</span></div>
+        <div class="tr-item"><span class="tr-name">글로벌케이</span><span class="tr-role">교육 설계 · 커리큘럼</span></div>
+        <div class="tr-item"><span class="tr-name">엑시온</span><span class="tr-role">SaaS 개발 · 자동화</span></div>
+        <div class="tr-item"><span class="tr-name">브랜드모먼트</span><span class="tr-role">마케팅 · 디자인</span></div>
+        <div class="tr-item"><span class="tr-name">하이퍼 AI 스튜디오</span><span class="tr-role">AI 영상 제작</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ██ S6 프로세스 ██ -->
+<section id="s6">
+  <div class="proc-header rv">
+    <h2>신청부터 성과까지 <em>5단계</em></h2>
+  </div>
+  <div class="proc-track">
+    <div class="proc-step rv"><div class="proc-num">01</div><span class="proc-badge free">FREE</span><div class="proc-h">무료 유선 상담</div><div class="proc-desc">담당 PM이 현황 파악. <strong>진단은 무료입니다.</strong></div></div>
+    <div class="proc-step rv"><div class="proc-num">02</div><span class="proc-badge free">FREE</span><div class="proc-h">대면 미팅 & 진단</div><div class="proc-desc">4개 영역 정밀 진단. <strong>구체적 로드맵 제시.</strong></div></div>
+    <div class="proc-step rv"><div class="proc-num">03</div><span class="proc-badge normal">STRATEGY</span><div class="proc-h">맞춤 솔루션 설계</div><div class="proc-desc">ROI 높은 순서로 우선순위 설계.</div></div>
+    <div class="proc-step rv"><div class="proc-num">04</div><span class="proc-badge normal">EXECUTE</span><div class="proc-h">V5 전문가 직접 실행</div><div class="proc-desc">5개 법인 직접 투입. <strong>실전 실행.</strong></div></div>
+    <div class="proc-step rv"><div class="proc-num">05</div><span class="proc-badge normal">ONGOING</span><div class="proc-h">성과 보고 & 사후 지원</div><div class="proc-desc">성과가 날 때까지 <strong>함께합니다.</strong></div></div>
+  </div>
+</section>
+
+<!-- ██ S7 체크리스트 ██ -->
+<section id="s7">
+  <div class="check-layout">
+    <div class="check-left rv">
+      <h2>지금 귀사에<br><em>해당됩니까?</em></h2>
+      <p style="font-size:13px;color:var(--t2);line-height:1.8;margin-top:16px">체크할수록 오른쪽에서 진단 결과를 확인하세요.</p>
+      <div class="cl-items" style="margin-top:32px">
+        <div class="cl-item" onclick="ck(this)"><div class="cl-box"></div><span class="cl-text">AI 도입은 알지만 어디서 시작할지 모른다</span></div>
+        <div class="cl-item" onclick="ck(this)"><div class="cl-box"></div><span class="cl-text">직원 교육 후 달라진 게 없다</span></div>
+        <div class="cl-item" onclick="ck(this)"><div class="cl-box"></div><span class="cl-text">경쟁사는 AI로 앞서가는 것 같아 불안하다</span></div>
+        <div class="cl-item" onclick="ck(this)"><div class="cl-box"></div><span class="cl-text">컨설팅은 받았지만 실행이 안 된다</span></div>
+        <div class="cl-item" onclick="ck(this)"><div class="cl-box"></div><span class="cl-text">ChatGPT는 쓰는데 업무 연결이 안 된다</span></div>
+        <div class="cl-item" onclick="ck(this)"><div class="cl-box"></div><span class="cl-text">AI 인력 비용도, 격차도 부담스럽다</span></div>
+      </div>
+    </div>
+    <div class="diag-result rv" id="diagResult">
+      <div class="diag-score" id="diagScore">0</div>
+      <div class="diag-bar-wrap">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-family:var(--fm);font-size:10px;color:var(--t2);letter-spacing:.1em;text-transform:uppercase">전환 긴급도</span><span style="font-family:var(--fm);font-size:10px;color:var(--org)" id="diagPct">0%</span></div>
+        <div class="diag-bar-track"><div class="diag-bar-fill" id="diagBar"></div></div>
+      </div>
+      <div class="diag-msg" id="diagMsg">// 왼쪽 항목을 체크하면<br>AI 전환 긴급도를 진단합니다.</div>
+      <div class="diag-kpis" id="diagKpis">
+        <div class="dk"><div class="dk-n" id="dkH">—</div><div class="dk-l">예상 절감 시간/연</div></div>
+        <div class="dk"><div class="dk-n" id="dkR">—</div><div class="dk-l">예상 ROI</div></div>
+        <div class="dk"><div class="dk-n" id="dkC">—</div><div class="dk-l">전환 완성 기간</div></div>
+        <div class="dk"><div class="dk-n" id="dkU">—</div><div class="dk-l">업무 자동화율</div></div>
+      </div>
+      <button class="gnb-cta diag-cta" id="diagCta" style="margin-top:4px;font-size:12px;width:100%;padding:13px" onclick="sf()">지금 무료 진단 신청 →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ██ S8 케이스 ██ -->
+<section id="s8">
+  <div class="case-header rv">
+    <h2>AI 전환,<br><em>결과로 말합니다.</em></h2>
+    <p style="font-family:var(--fm);font-size:10px;color:var(--t2);letter-spacing:.1em;text-transform:uppercase">← 드래그하여 확인 →</p>
+  </div>
+  <div class="case-scroll" id="caseScroll">
+    <div class="case-card"><div class="cc-industry">유아동 리테일</div><div class="cc-title">12개 브랜드<br>460<em>채널</em></div><div class="cc-metrics"><span class="cc-metric">+33~73%</span><span class="cc-metric">-80%</span></div><div class="cc-desc">영업이익 -23.7%, 140명 추가 채용 불가 → 6단계 AI 로드맵 적용</div></div>
+    <div class="case-card"><div class="cc-industry">이커머스</div><div class="cc-title">ROI<br><em>2,380%</em></div><div class="cc-metrics"><span class="cc-metric">14,508h</span><span class="cc-metric">×3~4</span></div><div class="cc-desc">4주 8회차 맞춤 교육 → 연간 14,508시간 절감, 콘텐츠 생산량 3~4배</div></div>
+    <div class="case-card"><div class="cc-industry">중견 뷰티</div><div class="cc-title">교육이<br><em>SaaS가 됐다</em></div><div class="cc-metrics"><span class="cc-metric">-80%</span><span class="cc-metric">신사업</span></div><div class="cc-desc">교육 중 나온 아이디어 → 자동화 도구 개발 → SaaS 신사업화</div></div>
+    <div class="case-card"><div class="cc-industry">제조/유통</div><div class="cc-title">1개월<br><em>투자 회수</em></div><div class="cc-metrics"><span class="cc-metric">2.6억</span><span class="cc-metric">/년</span></div><div class="cc-desc">30명 교육 → 연간 2.6~3.6억 절감 효과, 투자 회수 기간 약 1개월</div></div>
+    <div class="case-card" style="background:var(--org-dim);border-color:rgba(255,107,53,.25);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;gap:12px" onclick="sf()">
+      <div style="font-family:var(--fd);font-size:32px;color:var(--org)">우리 회사도?</div>
+      <div style="font-family:var(--fm);font-size:12px;color:var(--t2);letter-spacing:.1em;text-transform:uppercase">무료 진단으로 확인하세요</div>
+      <div style="font-family:var(--fm);font-size:13px;font-weight:700;color:#000;background:var(--org);padding:11px 24px;border-radius:3px;letter-spacing:.08em;text-transform:uppercase">신청하기 →</div>
+    </div>
+  </div>
+</section>
+
+<!-- ██ S9 희소성 ██ -->
+<section id="s9">
+  <div class="sc-inner rv">
+    <div class="sc-tag">월 최대 2개 기업</div>
+    <h2 class="sc-h">'할 수 있는' 기업만<br>함께합니다.</h2>
+    <p class="sc-sub">에프터&비포가 크게 차이날 수 있는 브랜드&컴퍼니하고만 일을 합니다.<br><strong>이번 달 잔여 1자리.</strong></p>
+    <div class="sc-slot-wrap">
+      <div class="sc-slot-l">이번 달 잔여</div>
+      <div class="sc-slot"><div class="sc-slot-tr" id="scTr"><div class="sc-slot-n">2</div><div class="sc-slot-n">1</div></div></div>
+      <div class="sc-slot-u">/ 2 자리</div>
+    </div>
+    <div class="sc-flip-tag">// 이달 마감까지 남은 시간</div>
+    <div class="sc-flip-row">
+      <div class="sc-flip-grp"><div class="sc-flip-digits"><div class="fcard" id="fd0"><div class="ffr" id="ff0">-</div><div class="fbk" id="fb0">-</div></div><div class="fcard" id="fd1"><div class="ffr" id="ff1">-</div><div class="fbk" id="fb1">-</div></div></div><div class="sc-flip-lbl">DAY</div></div>
+      <div class="fsep">:</div>
+      <div class="sc-flip-grp"><div class="sc-flip-digits"><div class="fcard" id="fd2"><div class="ffr" id="ff2">-</div><div class="fbk" id="fb2">-</div></div><div class="fcard" id="fd3"><div class="ffr" id="ff3">-</div><div class="fbk" id="fb3">-</div></div></div><div class="sc-flip-lbl">HOUR</div></div>
+      <div class="fsep">:</div>
+      <div class="sc-flip-grp"><div class="sc-flip-digits"><div class="fcard" id="fd4"><div class="ffr" id="ff4">-</div><div class="fbk" id="fb4">-</div></div><div class="fcard" id="fd5"><div class="ffr" id="ff5">-</div><div class="fbk" id="fb5">-</div></div></div><div class="sc-flip-lbl">MIN</div></div>
+      <div class="fsep">:</div>
+      <div class="sc-flip-grp"><div class="sc-flip-digits"><div class="fcard" id="fd6"><div class="ffr" id="ff6">-</div><div class="fbk" id="fb6">-</div></div><div class="fcard" id="fd7"><div class="ffr" id="ff7">-</div><div class="fbk" id="fb7">-</div></div></div><div class="sc-flip-lbl">SEC</div></div>
+    </div>
+    <button class="sc-cta" onclick="sf()">잔여 자리 확인 & 무료 상담 신청 →</button>
+  </div>
+</section>
+
+<!-- ██ S10 FORM ██ -->
+<section id="s10">
+  <div style="max-width:680px;margin:0 auto;padding:0 40px">
+    <h2 class="rv" style="font-family:var(--fd);font-size:clamp(36px,4.5vw,56px);line-height:.95;letter-spacing:-.01em;margin-bottom:32px;text-align:center">무료 AX 진단,<br><em style="font-style:normal;color:var(--org)">지금 신청하세요.</em></h2>
+    <div class="form-card rv">
+      <form id="axForm">
+        <div class="frow">
+          <div class="ff"><label class="fl">회사명 <span>*</span></label><input class="fi" type="text" name="company" placeholder="(주)회사명" required/></div>
+          <div class="ff"><label class="fl">성함 <span>*</span></label><input class="fi" type="text" name="name" placeholder="홍길동" required/></div>
+        </div>
+        <div class="frow">
+          <div class="ff"><label class="fl">연락처 <span>*</span></label><input class="fi" type="tel" name="phone" placeholder="010-0000-0000" required/></div>
+          <div class="ff"><label class="fl">이메일 <span>*</span></label><input class="fi" type="email" name="email" placeholder="name@company.com" required/></div>
+        </div>
+        <div class="ff" style="margin-bottom:12px">
+          <label class="fl">업종 <span>*</span></label>
+          <select class="fi" name="industry" required style="appearance:none;cursor:pointer;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%226%22><path fill=%22rgba(255,255,255,0.3)%22 d=%22M0 0l5 5 5-5%22/></svg>');background-repeat:no-repeat;background-position:right 12px center;">
+            <option value="" disabled selected>업종 선택</option>
+            <option>병원/의원</option>
+            <option>법무사/변호사</option>
+            <option>학원/교육</option>
+            <option>쇼핑몰/이커머스</option>
+            <option>인테리어/시공</option>
+            <option>여행/숙박</option>
+            <option>부동산/등기</option>
+            <option>제조/유통</option>
+            <option>IT/스타트업</option>
+            <option>기타</option>
+          </select>
+        </div>
+        <div class="fchk"><input type="checkbox" id="pa" required/><label for="pa">(필수) 개인정보 수집·이용에 동의합니다</label></div>
+        <button type="submit" class="fsub">무료 진단 신청하기</button>
+        <div class="fmc">// 영업 전화가 아닙니다 · 전문 PM의 현황 파악 미팅</div>
+      </form>
+    </div>
+  </div>
+  <!-- 신청 후 진행 안내 — 가로 3단 -->
+  <div style="max-width:900px;margin:40px auto 0;padding:0 40px">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;border:1px solid var(--line);border-radius:8px;overflow:hidden">
+      <div class="ps rv" style="background:var(--bg2);padding:24px 22px;border-right:1px solid var(--line);flex-direction:column;align-items:flex-start;gap:10px"><div class="ps-step" style="font-size:36px">01</div><div><div class="ps-h">유선 상담 (무료)</div><div class="ps-d">담당 PM이 현황을 파악하고 방향성을 논의합니다.</div></div></div>
+      <div class="ps rv" style="background:var(--bg2);padding:24px 22px;border-right:1px solid var(--line);flex-direction:column;align-items:flex-start;gap:10px"><div class="ps-step" style="font-size:36px">02</div><div><div class="ps-h">대면 미팅 & 무료 진단</div><div class="ps-d">4개 영역 정밀 진단. 데이터·현업·역량·인프라.</div></div></div>
+      <div class="ps rv" style="background:var(--bg2);padding:24px 22px;flex-direction:column;align-items:flex-start;gap:10px"><div class="ps-step" style="font-size:36px">03</div><div><div class="ps-h">맞춤 솔루션 제안</div><div class="ps-d">ROI 기반 최적 솔루션을 설계합니다.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ██ S11 FAQ ██ -->
+<section id="s11">
+  <div class="faq-header rv">
+    <h2>자주 묻는 <em>질문</em></h2>
+    <p>// 클릭하면 답변을 확인할 수 있습니다</p>
+  </div>
+  <div class="faq-list">
+    <div class="fq rv">
+      <div class="fq-inner">
+        <span class="fq-num">01</span>
+        <div class="fq-q" onclick="tFaq(this)">무료 미팅에서 정확히 뭘 하나요?<div class="fq-arr">+</div></div>
+        <div class="fq-a"><div class="fq-a-inner">현황 파악과 니즈 인터뷰를 진행합니다. 영업이 아닌 진단 미팅입니다. 담당 PM이 직접 업무 프로세스를 분석하고 AI 적용 포인트를 찾아드립니다.</div></div>
+      </div>
+    </div>
+    <div class="fq rv">
+      <div class="fq-inner">
+        <span class="fq-num">02</span>
+        <div class="fq-q" onclick="tFaq(this)">교육 인원은 몇 명까지 가능한가요?<div class="fq-arr">+</div></div>
+        <div class="fq-a"><div class="fq-a-inner">10명 미만 소규모부터 50명 규모까지 맞춤 운영합니다. 인원에 따라 집체 교육, 부서별 워크숍, 1:1 코칭을 제안드립니다.</div></div>
+      </div>
+    </div>
+    <div class="fq rv">
+      <div class="fq-inner">
+        <span class="fq-num">03</span>
+        <div class="fq-q" onclick="tFaq(this)">교육 후 실제로 남는 산출물은?<div class="fq-arr">+</div></div>
+        <div class="fq-a"><div class="fq-a-inner">프롬프트 라이브러리, 직무별 SOP, 커스텀 AI봇, AI 도입 로드맵 보고서가 납품됩니다. 교육이 끝나도 계속 쓸 수 있는 실제 도구들입니다.</div></div>
+      </div>
+    </div>
+    <div class="fq rv">
+      <div class="fq-inner">
+        <span class="fq-num">04</span>
+        <div class="fq-q" onclick="tFaq(this)">자동화 도구 개발도 가능한가요?<div class="fq-arr">+</div></div>
+        <div class="fq-a"><div class="fq-a-inner">교육 과정에서 도출된 니즈 기반으로 맞춤 자동화 도구 설계·개발까지 원스톱으로 진행합니다. 교육 → 개발 → SaaS 확장 사례도 있습니다.</div></div>
+      </div>
+    </div>
+    <div class="fq rv">
+      <div class="fq-inner">
+        <span class="fq-num">05</span>
+        <div class="fq-q" onclick="tFaq(this)">다른 AI 교육과 뭐가 다른가요?<div class="fq-arr">+</div></div>
+        <div class="fq-a"><div class="fq-a-inner">강사 1인이 아닌 5개 전문 법인의 현업 전문가가 동시 투입됩니다. 수료증이 아닌 실제 업무 방식의 전환이 목표입니다.</div></div>
+      </div>
+    </div>
+    <div class="fq rv">
+      <div class="fq-inner">
+        <span class="fq-num">06</span>
+        <div class="fq-q" onclick="tFaq(this)">월 2개 기업 한정인 이유는?<div class="fq-arr">+</div></div>
+        <div class="fq-a"><div class="fq-a-inner">5개 법인의 현업 전문가가 직접 투입되는 구조상, 동시에 많은 기업을 운영하면 품질을 보장할 수 없습니다. 에프터&비포가 크게 차이나는 기업하고만 일합니다.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="footer-logo"><span>X</span>NEX AX Agency</div><div class="footer-info">(주)엑스넥스 · contact@xnex.kr · © 2026 XNEX Inc.</div></footer>
+
+<div class="modal-ov" id="modal"><div class="modal-box"><div class="modal-ico">✓</div><div class="modal-t">신청 완료!</div><div class="modal-b">담당 PM이 48시간 내 유선으로 연락드립니다.</div><button class="modal-btn" onclick="document.getElementById('modal').classList.remove('on')">확인</button></div></div>
+
+<script>
+/* ── CURSOR ── */
+const cur=document.getElementById('cur'),curR=document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(loop)})();
+document.querySelectorAll('button,a,.cl-item,.fq-q,.case-card,.ba-item,.tb,.tr-item').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'))});
+
+/* ── BG CANVAS — warm particle grid ── */
+(function(){
+  const c=document.getElementById('bgC'),ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
+  resize();window.addEventListener('resize',()=>{resize();init()});
+  function init(){pts=[];const n=Math.floor(W*H/18000);for(let i=0;i<n;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*.7+.2,col:Math.random()<.12?'rgba(255,107,53,':'rgba(255,255,255,'})}
+  init();
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle='rgba(255,255,255,'+(.03*(1-d/110))+')';ctx.lineWidth=.5;ctx.stroke()}}
+    pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.col+'.35)';ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1});
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── HUB CANVAS — orbital ── */
+(function(){
+  const c=document.getElementById('hubCanvas');if(!c)return;
+  const W=c.parentElement.offsetWidth;c.width=W;c.height=W;
+  const ctx=c.getContext('2d'),cx=W/2,cy=W/2;
+  // 5개 위성 노드만 — 균등 배치
+  const satellites=[
+    {n:'글로벌케이',i:'🎓',base:0},
+    {n:'엑시온',i:'⚙️',base:Math.PI*.4},
+    {n:'브랜드모먼트',i:'📣',base:Math.PI*.8},
+    {n:'하이퍼AI',i:'🎬',base:Math.PI*1.2},
+    {n:'전략설계',i:'🗂️',base:Math.PI*1.6},
+  ];
+  const R=W*.38; // 궤도 반경
+  // 선 길이 펄스 — 각 노드마다 다른 위상
+  const phasedPulse=satellites.map((_,i)=>i*(Math.PI*2/satellites.length));
+  let t=0, mx2=cx, my2=cy, pulse=0;
+
+  // 마우스 추적
+  c.addEventListener('mousemove',e=>{
+    const rect=c.getBoundingClientRect();
+    mx2=e.clientX-rect.left;
+    my2=e.clientY-rect.top;
+  });
+  c.addEventListener('mouseleave',()=>{mx2=cx;my2=cy});
+
+  function draw(){
+    ctx.clearRect(0,0,W,W);
+    pulse+=.04;
+
+    // 마우스가 중심에서 얼마나 떨어졌는지 → 속도 영향
+    const mdx=mx2-cx,mdy=my2-cy,mdist=Math.sqrt(mdx*mdx+mdy*mdy);
+    const speed=.004+Math.min(mdist/W,.4)*.018;
+
+    // 궤도 링 — 펄스
+    const ringAlpha=.08+Math.sin(pulse)*.03;
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(255,107,53,${ringAlpha})`;ctx.lineWidth=1;ctx.setLineDash([5,12]);ctx.stroke();ctx.setLineDash([]);
+
+    // 중심 글로우 — 펄스
+    const glowR=28+Math.sin(pulse)*.6;
+    const grd=ctx.createRadialGradient(cx,cy,0,cx,cy,glowR*2.5);
+    grd.addColorStop(0,'rgba(255,107,53,.5)');grd.addColorStop(1,'transparent');
+    ctx.beginPath();ctx.arc(cx,cy,glowR*2.5,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
+
+    // 위성 위치 계산 + 마우스에 반응 + 선 길이 펄스
+    const pos=satellites.map((n,i)=>{
+      // 각 노드마다 다른 위상으로 반지름 펄스 (선이 짧아졌다 길어졌다)
+      const pR=R*(1+Math.sin(pulse+phasedPulse[i])*.12);
+      let a=n.base+t;
+      let x=cx+pR*Math.cos(a);
+      let y=cy+pR*Math.sin(a);
+      // 마우스에 밀려나는 효과
+      const dx=x-mx2,dy=y-my2,dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<80){const push=(80-dist)/80*18;x+=dx/dist*push;y+=dy/dist*push}
+      return {x,y,a};
+    });
+
+    // 연결선 — 위치 기반으로 정확히 연결
+    pos.forEach(p=>{
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(p.x,p.y);
+      const lineDist=Math.sqrt((p.x-cx)**2+(p.y-cy)**2);
+      const lineAlpha=.15+.1*(1-lineDist/R);
+      ctx.strokeStyle=`rgba(255,107,53,${lineAlpha})`;ctx.lineWidth=1;ctx.stroke();
+    });
+
+    // 위성 → 이웃 연결선 (얇게)
+    pos.forEach((p,i)=>{
+      const next=pos[(i+1)%pos.length];
+      ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(next.x,next.y);
+      ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=.5;ctx.stroke();
+    });
+
+    // 위성 노드
+    pos.forEach((p,i)=>{
+      const hovered=Math.sqrt((p.x-mx2)**2+(p.y-my2)**2)<22;
+      // glow
+      const ng=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,hovered?32:22);
+      ng.addColorStop(0,hovered?'rgba(255,107,53,.3)':'rgba(255,255,255,.07)');ng.addColorStop(1,'transparent');
+      ctx.beginPath();ctx.arc(p.x,p.y,hovered?32:22,0,Math.PI*2);ctx.fillStyle=ng;ctx.fill();
+      // circle
+      ctx.beginPath();ctx.arc(p.x,p.y,hovered?16:13,0,Math.PI*2);
+      ctx.fillStyle=hovered?'rgba(255,107,53,.2)':'rgba(255,255,255,.06)';
+      ctx.strokeStyle=hovered?'rgba(255,107,53,.7)':'rgba(255,255,255,.2)';
+      ctx.lineWidth=hovered?1.5:1;ctx.fill();ctx.stroke();
+      // icon
+      ctx.font='13px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(satellites[i].i,p.x,p.y);
+    });
+
+    // 중심 노드
+    ctx.beginPath();ctx.arc(cx,cy,18,0,Math.PI*2);
+    ctx.fillStyle='#FF6B35';ctx.strokeStyle='rgba(255,107,53,.8)';ctx.lineWidth=2;ctx.fill();ctx.stroke();
+    ctx.font='15px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('⚡',cx,cy);
+
+    t+=speed;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── SCROLL ── */
+window.addEventListener('scroll',()=>{
+  const s=window.scrollY;
+  document.getElementById('gnb').classList.toggle('scrolled',s>60);
+  document.getElementById('fcta').classList.toggle('on',s>400);
+},{passive:true});
+
+/* ── HERO COUNTERS ── */
+function animNum(id,target,dur,dec){
+  const el=document.getElementById(id);if(!el)return;
+  const start=performance.now();
+  (function f(now){
+    const p=Math.min((now-start)/dur,1),v=p*target;
+    el.textContent=dec?v.toFixed(1):Math.floor(v).toLocaleString();
+    if(p<1)requestAnimationFrame(f);
+  })(performance.now());
+}
+setTimeout(()=>{animNum('hc1',14508,2000);animNum('hc2',2380,2000);animNum('hc3',6,1500)},400);
+
+/* ── DATA COUNTERS ── */
+(function(){
+  const obs=new IntersectionObserver(ens=>{ens.forEach(e=>{if(!e.isIntersecting)return;const el=e.target,t=parseInt(el.dataset.count),s=el.dataset.suffix||'';if(isNaN(t)){obs.unobserve(el);return}let n=0;const timer=setInterval(()=>{n+=Math.ceil(t/(1200/16));if(n>=t){n=t;clearInterval(timer)}el.textContent=n+s},16);obs.unobserve(el)})},{threshold:.5});
+  document.querySelectorAll('[data-count]').forEach(el=>obs.observe(el));
+})();
+
+/* ── ROI CALCULATOR ── */
+function calcROI(){
+  const emp=parseInt(document.getElementById('empSlider').value);
+  const hrs=parseFloat(document.getElementById('hourSlider').value);
+  document.getElementById('empVal').textContent=emp;
+  document.getElementById('hourVal').textContent=hrs;
+  const savedH=Math.round(emp*hrs*0.75*240);
+  const savedM=(savedH*25000/100000000).toFixed(1);
+  document.getElementById('savedHours').textContent=savedH.toLocaleString();
+  document.getElementById('savedMoney').textContent=savedM;
+}
+calcROI();
+
+/* ── BEFORE/AFTER ── */
+(function(){
+  const rows=document.querySelectorAll('.ba-item'),sec=document.querySelector('#s4');
+  if(!rows.length||!sec)return;
+  let played=false,timers=[];
+  function play(){if(played)return;played=true;rows.forEach((r,i)=>{timers.push(setTimeout(()=>r.classList.add('seq-b'),i*350));timers.push(setTimeout(()=>{r.classList.remove('seq-b');r.classList.add('seq-a')},i*350+500))})}
+  function reset(){timers.forEach(clearTimeout);timers=[];played=false;rows.forEach(r=>r.classList.remove('seq-b','seq-a'))}
+  window.addEventListener('scroll',()=>{const r=sec.getBoundingClientRect();if(r.top<window.innerHeight*.6&&r.bottom>0)play();if(r.top>window.innerHeight*.75)reset()},{passive:true});
+})();
+
+/* ── CHECKLIST ── */
+const kpiData=[
+  {h:'—',r:'—',c:'—',u:'—'},
+  {h:'2,400h',r:'480%',c:'8mo',u:'30%'},
+  {h:'4,800h',r:'960%',c:'7mo',u:'45%'},
+  {h:'7,200h',r:'1,440%',c:'6mo',u:'60%'},
+  {h:'9,600h',r:'1,920%',c:'6mo',u:'70%'},
+  {h:'12,000h',r:'2,380%',c:'5mo',u:'80%'},
+  {h:'14,508h',r:'2,380%+',c:'5mo',u:'90%'},
+];
+let cnt=0;
+const diagMsgs=['','AI 전환 시작을 고려해보세요.','부분적 도입 검토가 필요합니다.','3개 이상 — 지금이 전환점입니다.','즉각적인 AI 전환 설계가 필요합니다.','5개 이상 — AI 전환이 매우 시급합니다.','전 항목 해당! 즉시 무료 진단을 받으세요.'];
+function ck(el){
+  el.classList.toggle('on');
+  el.querySelector('.cl-box').textContent=el.classList.contains('on')?'✓':'';
+  cnt=document.querySelectorAll('.cl-item.on').length;
+  const pct=Math.round(cnt/6*100);
+  document.getElementById('diagScore').textContent=cnt;
+  document.getElementById('diagBar').style.width=pct+'%';
+  document.getElementById('diagPct').textContent=pct+'%';
+  document.getElementById('diagMsg').textContent=diagMsgs[cnt]||'';
+  document.getElementById('diagMsg').classList.toggle('urgent',cnt>=3);
+  document.getElementById('diagCta').classList.toggle('show',cnt>=3);
+  // KPI 업데이트
+  const k=kpiData[cnt];
+  document.getElementById('dkH').textContent=k.h;
+  document.getElementById('dkR').textContent=k.r;
+  document.getElementById('dkC').textContent=k.c;
+  document.getElementById('dkU').textContent=k.u;
+  document.getElementById('diagKpis').classList.toggle('show',cnt>=2);
+}
+
+/* ── CASE DRAG SCROLL ── */
+(function(){
+  const el=document.getElementById('caseScroll');if(!el)return;
+  let down=false,sx=0,sl=0;
+  el.addEventListener('mousedown',e=>{down=true;sx=e.pageX-el.offsetLeft;sl=el.scrollLeft;el.style.scrollBehavior='auto'});
+  el.addEventListener('mouseleave',()=>down=false);
+  el.addEventListener('mouseup',()=>down=false);
+  el.addEventListener('mousemove',e=>{if(!down)return;e.preventDefault();el.scrollLeft=sl-(e.pageX-el.offsetLeft-sx)*1.5});
+})();
+
+/* ── FLIP COUNTDOWN ── */
+(function(){
+  const prev=Array(8).fill('');
+  function dg(n){return String(n).padStart(2,'0').split('')}
+  function flip(i,ch){if(prev[i]===ch)return;prev[i]=ch;const f=document.getElementById('ff'+i),b=document.getElementById('fb'+i),c=document.getElementById('fd'+i);if(!f||!b||!c)return;b.textContent=ch;c.classList.remove('fa');void c.offsetWidth;c.classList.add('fa');setTimeout(()=>{f.textContent=ch;c.classList.remove('fa')},220)}
+  function update(){const now=new Date(),end=new Date(now.getFullYear(),now.getMonth()+1,1),diff=Math.max(0,end-now);const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);const[d0,d1]=dg(d),[h0,h1]=dg(h),[m0,m1]=dg(m),[s0,s1]=dg(s);flip(0,d0);flip(1,d1);flip(2,h0);flip(3,h1);flip(4,m0);flip(5,m1);flip(6,s0);flip(7,s1)}
+  update();setInterval(update,1000);
+  const tr=document.getElementById('scTr');if(tr)setTimeout(()=>{tr.style.transform='translateY(-56px)'},1000);
+})();
+
+/* ── FAQ ── */
+function tFaq(el){const p=el.closest('.fq'),was=p.classList.contains('open');document.querySelectorAll('.fq.open').forEach(f=>f.classList.remove('open'));if(!was)p.classList.add('open')}
+
+/* ── REVEAL ── */
+const rv=new IntersectionObserver(ens=>{ens.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')})},{threshold:.07});
+document.querySelectorAll('.rv').forEach(el=>rv.observe(el));
+
+/* ── FORM ── */
+function sf(){document.getElementById('s10').scrollIntoView({behavior:'smooth'})}
+document.getElementById('axForm').addEventListener('submit',e=>{e.preventDefault();document.getElementById('modal').classList.add('on')});
+</script>
+</body>
+</html>
